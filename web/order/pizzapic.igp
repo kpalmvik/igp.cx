@@ -1,0 +1,16 @@
+<?
+
+	// Ta reda på vilka ingredienser som skall användas
+	$id = explode(",", $QUERY_STRING);
+
+	$base = ImageCreateFromGif("ingredients/0.gif"); // Börja med en botten
+
+	for($i = 0; $i < (count($id) - 1); $i++) {
+		$ing = ImageCreateFromGif("ingredients/" . $id[$i] . ".gif");
+		ImageCopyResized($base, $ing, 0, 0, 0, 0, 150, 150, 150, 150);
+		ImageDestroy($ing); // Rensa minnet
+	}	
+	
+	ImageGif($base); // Skicka bilden till klienten
+
+?>

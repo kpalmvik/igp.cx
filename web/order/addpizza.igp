@@ -1,0 +1,159 @@
+<?php
+
+	require("../script/const.igp");
+	require("../script/time.igp");
+	require("../script/lang.igp");
+	require("pizzafunctions.igp");
+	require("ownpizzafunctions.igp");
+	
+	JustValidSIDs($profileid, $orderid, $sid, "sid500.igp?lang=$lang");
+	
+	if($function == 1) { // Färdig pizza
+		EchoPizzas();
+	}
+	
+	if($function == 2) { // Användaren skall välja hur många pizzor han/hon/den/det vill ha
+		Header("Location: numpizzas.igp?sid=$sid&pizza=$pizza&orderid=$orderid&profileid=$profileid&lang=$lang&cur=$cur");
+		exit();
+	}
+	
+	if($function == 3) { //Spara pizzorna i ordern
+		SavePizzas();
+	}
+	
+	if($function == 4) {
+		$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+		if($favorite) 
+			$k = 0;		
+		else
+			$k = 1;
+
+		$number = intval($number);
+		if(!$number) $number = 1;
+		if($number > 99) $number = 99;
+		if($number < 1) $number = 1;
+		
+			
+		pg_Exec("UPDATE igpOrderPizza SET count = $number WHERE orderid = $orderid AND pizzaid = " . ($pizza - $k));
+		Header("Location: main.igp?profileid=$profileid&orderid=$orderid&sid=$sid&update=true&lang=$lang&cur=$cur");
+		exit();
+	}
+	
+	if($function == 5) {
+		ListIngredients(); //i ownpizzafunc...
+		exit();
+	}
+	
+	if($function == 6) {
+		AddFavorite();
+		Header("Location: main.igp?profileid=$profileid&orderid=$orderid&sid=$sid&update=true&lang=$lang&cur=$cur");
+	}
+	
+?>
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">			
+		<TITLE><? lang($lang, 10105000); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10105001); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">		
+		<? lang($lang, 10105002); ?>
+		</FONT>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000"><H2>
+		<? lang($lang, 10105003); ?>
+		</H2></FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>
+		<? lang($lang, 10105004); ?><BR>
+		&nbsp;&gt;&nbsp;<A HREF="<? echo "addpizza.igp?function=1&error=nope&sid=" . $sid . "&lang=" . $lang . "&orderid=" . $orderid . "&profileid=$profileid&cur=$cur"; ?>"><? lang($lang, 10105005); ?></A>
+		<BR>	
+		</FONT>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000"><H2>
+		<? lang($lang, 10105006); ?>
+		</H2></FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>
+		<? lang($lang, 10105007); ?><BR>
+		&nbsp;&gt;&nbsp;<A HREF="addpizza.igp?function=5&<? echo "profileid=$profileid&orderid=$orderid&sid=$sid&lang=$lang&cur=$cur"; ?>"><? lang($lang, 10105008); ?></A>
+		</FONT>
+		<BR><BR>
+		</FONT>
+
+<?
+
+// Dags för favoritpizzor, vi ska bara ha det här alternativet om det finns några favoriter sparade
+
+$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+	
+// Hämta de pizzanamn som finns
+if($profileid == "w") // Hämta från order- eller profiles-tabellen
+	$result = pg_Exec("SELECT pizza1, pizza2, pizza3, pizza4, pizza5 FROM igpOrder WHERE orderid=$orderid");
+else	
+	$result = pg_Exec("SELECT pizza1, pizza2, pizza3, pizza4, pizza5 FROM igpProfiles WHERE profileid = $profileid");
+
+$isFav = false; //Finns inga favoriter vad vi vet...får se snart.
+
+for($i = 0; $i < 5; $i++) {
+	if(pg_Result($result, 0, ($i)) != "") //gå igenom resultattabellen steg för steg
+		$isFav = true; // Ange att det finns favoriter
+}
+	
+if($isFav) { //Om vi överhuvudtaget har några favoriter sparade
+?>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000"><H2>
+		<? lang($lang, 10105009); ?>
+		</H2></FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>
+		<? lang($lang, 10105010); ?> <A HREF="addpizza.igp?function=5&<? echo "profileid=$profileid&orderid=$orderid&sid=$sid&lang=$lang&cur=$cur"; ?>"><? lang($lang, 10105011); ?></A> <? lang($lang, 10105012); ?>
+		</FONT>		
+		<FORM ACTION="numpizzas.igp" METHOD="post">
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+			<INPUT TYPE="hidden" NAME="favorite" VALUE="true">
+			<INPUT TYPE="hidden" NAME="function" VALUE=6>
+			<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur; ?>">
+			<SELECT NAME="pizza">
+			
+<?
+	for($i = 0; $i < 5; $i++) {
+		$pizza[$i] = pg_Result($result, 0, $i);
+		if($pizza[$i] != "") 
+			echo "<OPTION VALUE=\"" . -1 * ($i + 1) . "\">" . $pizza[$i] . "</OPTION>";
+	}
+?>
+	</SELECT>
+	<INPUT TYPE="submit" VALUE="<? lang($lang, 10105013); ?>">
+	</FORM>
+<?
+}
+?>
+
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>

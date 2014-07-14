@@ -1,0 +1,50 @@
+<? header("http/1.0 400 Bad Request");
+
+include("../script/const.igp");
+include("../script/lang.igp");
+
+GetLang(); //Plocka ut ett vettigt språk
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<TITLE>400 Bad Request</TITLE>
+	<LINK REL="STYLESHEET" TYPE="text/css" HREF="/errorhandling/error.css">
+</HEAD>
+<BODY BGCOLOR="#363636" TEXT="#E0E0E0" LINK="#E0E0E0" VLINK="#E0E0E0" ALINK="#CCCC99">
+<CENTER>
+	<TABLE WIDTH=500 BORDER=0 CELLSPACING=0 CELLPADDING=0>
+	<TR>
+		<TD>
+			<BR>
+			<CENTER>
+				<IMG SRC="/errorhandling/logo.gif"
+WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza"><BR><BR>
+			</CENTER>
+
+			<B CLASS="head">400 Bad Request</B><BR>
+			<DIV CLASS="txt">
+			<? lang($lang, 9400001) ?>
+			<P>
+			<? lang($lang, 9404003) ?>
+			<UL>
+				<LI><? lang($lang, 9404004) ?>
+				<LI><? lang($lang, 9404005) ?>				
+				<LI><? lang($lang, 9404006) ?>
+			</UL>
+			<P>
+			&nbsp;&nbsp;&nbsp;<? lang($lang, 9400006) ?> (<? echo $HTTP_USER_AGENT; ?>) <? lang($lang, 9400007) ?> <TT><? echo $REQUEST_URI; ?></TT> <? lang($lang, 9400008) ?>
+			</DIV>
+			<BR>
+			<CENTER>
+				<IMG SRC="/errorhandling/line.gif" WIDTH=500 HEIGHT=1 HSPACE=0 VSPACE=0 ALT="---"><BR>
+				<SMALL CLASS="copy">
+					Copyright &copy; 2000 Intergalactic Pizza Corporation. All rights reserved.
+				</SMALL>
+			</CENTER>
+		</TD>
+	</TR>
+	</TABLE>
+</CENTER>
+</BODY>
+</HTML>

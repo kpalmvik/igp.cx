@@ -1,0 +1,9 @@
+<?
+
+	Error_Reporting(0);
+
+	define("dbDB", "Set Database Name Here");
+	define("dbUSERNAME", "Set Username Here");
+	define("dbPASSWORD", "Set Password Here");
+
+?>

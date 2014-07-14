@@ -1,0 +1,46 @@
+	A  {
+	color : #E0E0E0;
+}
+	A:hover  {
+	color : #FFC000;
+}
+	.txt  {
+	font-family : arial,helvetica,sans-serif;
+	font-size : 10pt;
+}
+	.quicklink  {
+	font-family : arial,helvetica,sans-serif;
+	font-size : 8pt;
+	color : #E0E0E0;
+}
+	.copy  {
+	font-family : arial,helvetica,sans-serif;
+	font-size : 9pt;
+	color : #A0A0A0;
+
+}
+	.header  {
+	font-family : arial, helvetica, sans-serif;
+	font-size : 12pt;
+	color : #FFC000;
+}
+	H1  {
+	font-family : arial,helvetica,sans-serif;
+	font-size : 25pt;
+	color : #FFC000;
+}
+	H2  {
+	font-family : arial,helvetica,sans-serif;
+	font-size : 18pt;
+	color : #FFC000;
+	margin-bottom : 4;
+}
+	H3 {
+	font-family: arial,helvetica, sans-serif;
+	font-size: 12pt;
+	color: #FFC000;
+	margin-bottom: 4;
+}
+	.namn  {
+	font-size : 12pt;
+}

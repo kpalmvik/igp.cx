@@ -1,0 +1,48 @@
+<?php	
+
+	require("script/const.igp");
+	require("script/common.igp");
+	// Räkna antalet besökare på den här sidan
+	counter();
+?>
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="css/default.css">
+		<TITLE>Welcome to Intergalactic Pizza</TITLE>
+	</HEAD>
+</HEAD>
+<BODY BGCOLOR="#363636" TEXT="#E0E0E0" LINK="#FFC000" VLINK="#FFC000" ALINK="#FFC000">
+<CENTER>
+	<TABLE WIDTH=500 BORDER=0 CELLSPACING=0 CELLPADDING=0>
+	<TR>
+		<TD ALIGN="left">
+			<FONT FACE="arial,helvetica">
+			<CENTER>
+				<IMG SRC="images/logo.gif" WIDTH=400
+HEIGHT=69 ALT="Intergalactic Pizza" HSPACE=0 VSPACE=10><BR>
+			</CENTER>
+			<H2>Please wait...</H2>
+			<DIV CLASS="txt">
+We are currently translating Intergalactic Pizza to English and other
+languages. It may take a while, but we promise it's worth waiting for.
+			<BR><BR>
+			&nbsp;&nbsp;&nbsp;When we are finished you will be
+able to order pizza independent of your location, local currency or
+language. Welcome back!
+<BR><BR>
+<A HREF="./">Go back</A>
+			</DIV>
+			</FONT>
+			<P>
+			<CENTER>
+				<IMG SRC="images/line.gif" WIDTH=500 HEIGHT=1 HSPACE=0 VSPACE=0 ALT="---"><BR>
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy">
+					Copyright &copy; 2000 Intergalactic Pizza Corporation. All rights reserved.
+				</FONT>
+			</CENTER>
+		</TD>
+	</TR>
+	</TABLE>
+</CENTER>
+</BODY>
+</HTML>

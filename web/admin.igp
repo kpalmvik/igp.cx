@@ -1,0 +1,70 @@
+<HTML>
+	<HEAD>
+		<TITLE>IGP - Administratörssidan</TITLE>
+	</HEAD>
+	<BODY BGCOLOR="#363636" TEXT="#E0E0E0" LINK="#E0E0E0" VLINK="#E0E0E0" ALINK="#CCCC99" MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 RIGHTMARGIN=0>
+	<? require("header.igp"); ?>
+
+
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD WIDTH=110><IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=55 VSPACE=0 ALT=""></TD>
+	</TR>
+	<TR>
+		<TD ALIGN="center">
+			<CENTER>
+				<IMG SRC="images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza" ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all">
+			</CENTER>		
+			<BR>
+		</TD>
+	</TR>
+	<TR>
+		<TD><BR>&nbsp;</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2 COLOR="#FFC000">
+				<H1>Administratörssidan</H1>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				Sidan där du kan kolla upp dina kunder, ta bort dem, och i allmänhet utföra roliga filsystemsoperationer. Men BARA för dig som är administratör :)
+				</DIV>
+			</FONT>
+			<FONT FACE="arial,helvetica" COLOR="#FFC000">
+				<H2>Beställningar</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica">
+				<DIV CLASS="txt">
+					&nbsp;&nbsp;&nbsp;<A HREF="admin/seeorders.igp">Se beställningar</A><BR>
+					&nbsp;&nbsp;&nbsp;<A HREF="admin/removeincompleteorders.igp">Ta bort ofullständiga beställningar</A>
+				</DIV>
+			</FONT>
+
+			<FONT FACE="arial,helvetica" COLOR="#FFC000">
+				<H2>Filer</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica">
+				<DIV CLASS="txt">
+					&nbsp;&nbsp;&nbsp;<A HREF="admin/addfile.igp">Lägg till fil</A><BR>
+					&nbsp;&nbsp;&nbsp;<A HREF="admin/changefile.igp">Ändra i en fil</A><BR>
+					&nbsp;&nbsp;&nbsp;<A HREF="admin/removefile.igp">Ta bort en fil</A>
+				</DIV>
+			</FONT>
+		</TD>
+	</TR>
+
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+	</BODY>
+</HTML>

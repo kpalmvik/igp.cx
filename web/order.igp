@@ -1,0 +1,99 @@
+<?
+	require("script/const.igp"); // Våra konstanter
+	//require("script/lang.igp");
+?>
+<HTML>
+<HEAD>	
+	<TITLE>IGP - Beställ pizza
+		<? //lang($lang, "000-0"); ?>
+	</TITLE>
+	<LINK REL="STYLESHEET" TYPE="text/css" HREF="css/default.css">
+</HEAD>
+<? include("header.igp"); ?>
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all">
+				<FONT FACE="arial,helvetica" SIZE=1 CLASS="quicklink">
+					<A HREF="igp/?lang=<? echo $lang ?>">Om IGP</A> | <A HREF="main.igp?lang=<? echo $lang ?>">Tillbaka till huvudsidan</A>
+				</FONT>
+				<BR>&nbsp;<BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2 COLOR="#FFC000">
+				<H1>Beställ pizza</H1>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				Hos Intergalactic Pizza har du valmöjligheter. Du kan välja mellan att gå med i vår ClubIGP eller att beställa utan att registrera dig som medlem. Är du redan med i klubben kan du snabbt och enkelt logga in här när som helst.
+				</DIV>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2 COLOR="#FFC000">
+				<H2>Bli medlem i ClubIGP</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				ClubIGP är klubben för dig som beställer pizza ofta. Det kostar ingenting att bli medlem och det tar inte många sekunder. Trots det ger det dig många fördelar.<BR>
+				&nbsp;&nbsp;&nbsp;Som medlem slipper du också att skriva in dina personuppgifter varje gång du beställer pizza.
+				<BR>&nbsp;<BR>
+				&nbsp;&gt;&nbsp;<A HREF="profile/wizard.igp?lang=<? echo $lang; ?>&step=1">Bli medlem nu</A><BR>
+				&nbsp;&gt;&nbsp;<A HREF="member.igp?lang=<? echo $lang ?>">Läs mer om ClubIGP</A>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2 COLOR="#FFC000">
+				<H2>Logga in som medlem</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				Är du redan medlem i ClubIGP loggar du in nedan med ditt användarnamn och lösenord du fick vid registreringen.
+				</DIV>
+				<FORM ACTION="order/main.igp" METHOD="post">
+					<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+					<INPUT TYPE="hidden" NAME="first" VALUE="1">
+						
+					<TABLE>
+						<TR>
+							<TD>
+								<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><B>Användarnamn:</B></FONT><BR>						
+								<INPUT TYPE="text" NAME="username" SIZE=20 MAXLENGTH=50 TITLE="Här skriver du in ditt användarnamn, t.ex Nils Karlsson">
+							</TD>
+							<TD>&nbsp;&nbsp;</TD>
+							<TD>
+								<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><B>Lösenord:</B></FONT><BR>
+								<INPUT TYPE="password" NAME="password" SIZE=20 MAXLENGTH=50 TITLE="Här skriver du in ditt lösenord, t.ex L31f-5u63R">
+							</TD>
+							<TD>&nbsp;&nbsp;</TD>							
+							<TD>&nbsp;<BR><INPUT TYPE="submit" VALUE="Logga in &gt;&gt;&gt;"></TD>
+						</TR>
+					</TABLE>
+
+				</FORM>
+				
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2 COLOR="#FFC000">
+				<H2>Beställ utan att vara medlem</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">Vill du av någon anledning inte bli medlem i ClubIGP, vilket är helt gratis och ger dig många förmåner, har du här möjlighet att beställa ändå.
+				<BR>&nbsp;<BR>
+				&nbsp;&gt;&nbsp;<A HREF="profile/license.igp?lang=<? echo $lang; ?>">Beställ direkt</A>	
+			</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>	
+</TABLE>
+</BODY>
+</HTML>

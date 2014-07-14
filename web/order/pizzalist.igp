@@ -1,0 +1,170 @@
+<?
+		
+	require("../script/time.igp");	
+	JustValidSIDs($profileid, $orderid, $sid, "sid500.igp?lang=$lang");
+	
+	// Den här sidan skall definitivt aldrig cachas! Förhindra det!
+	  header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");             // Date in the past
+	  header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); // always modified
+	  header("Cache-Control: no-cache, must-revalidate");           // HTTP/1.1
+	  header("Pragma: no-cache");                                   // HTTP/1.0
+
+
+	require("../script/const.igp");
+	require("../script/lang.igp");
+	require("orderfunctions.igp");
+	
+	$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+
+$result = pg_Exec("SELECT * FROM igpCurrency WHERE currency =
+'$cur'");
+        if(pg_NumRows($result) < 1)
+                $cur = 'IGP';	
+?>
+
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">	
+		<STYLE>
+		<!--
+		.pl_header {
+					color: #FFC000;
+					font-family: arial,helvetica,sans-serif;
+					size: 14pt;
+		}
+		-->
+		</STYLE>
+		<TITLE><? lang($lang, 10113000); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp"); ?>
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<FONT FACE="arial,helvetica" COLOR="#FFC000">
+					<H1><? lang($lang, 10113001); ?></H1>
+				</FONT>
+				<? if($f == "1") {/*Om det är första gången, visa välkomstmsg */
+				
+				// Nu ska vi leta användardata
+				if($profileid == "w")  //använder inte profil, kolla orderloggen
+					$result = pg_Exec("SELECT firstname FROM igpOrder WHERE orderid='$orderid'");
+				else
+					$result = pg_Exec("SELECT firstname FROM igpProfiles WHERE profileid='$profileid'");
+
+				setlocale ("LC_TIME", return_lang($lang, 11)); //Sätt tidsvisningen
+				//Ta reda på förnamnet.
+				$firstname = pg_Result($result, 0, "firstname");
+				?>
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt">
+				<? lang($lang, 10113002); ?> <? echo $firstname ?>. <? lang($lang, 10113003); ?> <? echo strftime("%H:%M", time()) ?> <? lang($lang, 10113004); ?>
+				</FONT>
+				<? } ?>
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<BR>
+			<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 ALIGN="left">
+				<TR>
+					<TD>
+						<FORM ACTION="changecurrency.igp" METHOD="post">
+							<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+							<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+							<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+							<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+							<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur; ?>">
+							<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10113005); ?>:&nbsp;</FONT>
+							<SELECT NAME="cur">
+							<?
+								
+							// Lägg till tillgängliga, vanliga, valutor.
+							$result = pg_Exec("SELECT name FROM igpCurrency WHERE currency = '$cur'");
+							echo "<OPTION VALUE=\"$cur\">" . pg_Result($result, 0, 0) . " ($cur)</OPTION>";
+							echo "<OPTION VALUE=0>------------------------</OPTION>";
+							$result = pg_Exec("SELECT currency, name FROM igpCurrency WHERE currency = 'IGP' OR currency = 'SEK' OR currency = 'USD' OR currency = 'GBP' OR currency = 'DKK' OR currency = 'EUR' OR currency = 'FIM' OR currency = 'FRF' OR currency = 'DEM' OR currency = 'ISK' OR currency = 'JPY' OR currency = 'NOK' ORDER BY name");
+							for($i = 0; $i < pg_NumRows($result); $i++) {
+								$res_curShort = pg_Result($result, $i, "currency");
+								$res_curName = pg_Result($result, $i, "name");
+								echo "<OPTION VALUE=\"$res_curShort\">$res_curName ($res_curShort)</OPTION>";
+							}
+							?>
+									</SELECT>
+							&nbsp;<INPUT TYPE="submit" VALUE="<? lang($lang, 10113006); ?>">
+						</FORM>
+					</TD>
+					<TD>
+						<FORM ACTION="morecurrencys.igp" METHOD="post">
+							<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">
+							<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">
+							<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">
+							<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">
+							<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur?>">
+							<INPUT TYPE="submit" VALUE=" <? lang($lang, 10113007); ?> ">
+						</FORM>
+					</TD>
+				</TR>
+			</TABLE></TD>
+	</TR>
+</TABLE>
+<BR><BR>
+<TABLE WIDTH="600" ALIGN="center" CELLSPACING=0 CELLPADDING=0 BORDER=0>
+	<TR>
+		<TD WIDTH=380><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10113008); ?>&nbsp;&nbsp;</B></FONT></TD>
+		<TD WIDTH=50><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10113009); ?>&nbsp;&nbsp;</B></FONT></TD>
+		<TD WIDTH=110><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10113010); ?>&nbsp;&nbsp;<B></FONT></TD>
+		<TD WIDTH=10><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10113011); ?></B></FONT></TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=4><HR></TD>
+	</TR>
+	<?
+		EchoPizzaList(); //Pluttar ut den fina listan över pizzor man har i kartongen, finns i orderfunctions.igp
+	?>
+</TABLE>
+<BR CLEAR="all">
+<BR>
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<!--Avbryt beställning och gå till kassan (när det är tillgängligt) -->
+			<CENTER>
+				<H3>
+				<? if($h != "1") echo "<A HREF=\"pizzalist.igp?cur=$cur&lang=$lang&orderid=$orderid&profileid=$profileid&sid=$sid&h=1\">Hjälp</A> |" ?>
+				<? echo "<A HREF=\"changepersonalinformation.igp?cur=$cur&lang=$lang&orderid=$orderid&profileid=$profileid&sid=$sid\">"; ?><? lang($lang, 10113012); ?></A> | 
+				<A HREF="cancelorder.igp?lang=<? echo $lang ?>&cur=<? echo $cur ?>&sid=<? echo $sid ?>&orderid=<? echo $orderid ?>&profileid=<? echo $profileid ?>"><? lang($lang, 10113013); ?></A>
+					<? if($sumPizzas) 
+						echo "| <A HREF=\"../pay/confirm.igp?orderid=$orderid&profileid=$profileid&a=b&cur=$cur&lang=$lang&sid=$sid\">" . return_lang($lang, 10113014)  . " &gt;&gt;&gt;</A>"; ?>
+				</H3>
+			</CENTER>
+			</FONT>
+			<? if($h == "1"){ /*När vi vill ha hjälptexten*/ ?>
+			<FONT FACE="arial,helvetica" COLOR="#FFC000">			
+			<H2><? lang($lang, 10113015); ?></H2>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<DIV CLASS="txt">
+			<? lang($lang, 10113016); ?><BR>
+			&nbsp;&nbsp;&nbsp;<? lang($lang, 10113017); ?> <? echo $cur ?>. <? lang($lang, 10113018); ?><P>
+			&nbsp;&nbsp;&nbsp;<? lang($lang, 10113019); ?>
+			<BR>
+			<? } ?>
+		</TD>
+	</TR>
+	<TR>
+		<TD ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY>
+</HTML>

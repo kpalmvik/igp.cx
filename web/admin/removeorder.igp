@@ -1,0 +1,9 @@
+<? 
+
+	require("../script/const.igp");
+	
+	$db = pg_Connect("dbname = " . dbDB . " user = " . dbUSERNAME . " password = " . dbPASSWORD);
+	pg_Exec("DELETE FROM igpOrder WHERE orderid=$orderid");
+	Header("Location: seeorders.igp?orderid=$orderid&&daysback=$daysback&JustDoneOnes=$JustDoneOnes&show=$show&fromorder=$fromorder&toorder=$toorder&radiofrom=$radiofrom&radioto=$radioto&function=1");
+
+?>

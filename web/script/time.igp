@@ -1,0 +1,164 @@
+<?php
+	// Delar ut ett sid (security-id).
+	function encodeTime($f_orderid, $f_profileid) { 
+		srand(time()); // Starta slumptalsgeneratorn
+		if($f_profileid == "w") $f_profileid = 47;
+		$nowTime = time(); // Aktuell tid, returnerar en unix-timestamp som är mellan 9 och 10 tecken lång
+/*
+
+Så här bygger vi upp ett sid.
+
+sid =
+	!3 + t[1,2] + oid[1] + t[2,3] + oid[sista] + rndchr[2] + int2chr(pid[1])
+	+ time[4-8] + rndchr[2] + int(oid[sista]/3) + rndchr[3] + (strlen(time) - 5) +
+	int(pid[sista]/2) + time[9-10] + oid[]
+
+Okej, vi tar ett exempel. Följ noga med nu...
+
+time = 982764728	oid=737		pid=137	
+
+sid = !3 98 7 82 7 Ah C 76472 kQ 2 cWj 4 3 8 737 
+sid = !3987827AhC76472kQ2cWj438737
+
+*/	
+		$sid =
+			"!3" . //Statisk !3
+			substr($nowTime,0,2) . // De två första tecknen i tiden
+			substr($f_orderid, 0, 1) . // Första tecknet i Orderid
+			substr($nowTime,1, 2) . // Tecken 2 och 3 från tiden
+			substr($f_orderid, strlen($f_orderid) - 1, 1) . //Sista tecknet från orderid
+			rndChr(2) . //Två slumptecken
+			int2chr(substr($f_profileid, 0, 1)) . // Gör om pidets första siffra till en bokstav med int2chr
+			substr($nowTime, 3, 5) . // Från tecken 4 i tiden och 5 steg frammåt
+			rndChr(2) . //Två slumptecken
+			intval(substr($f_orderid, strlen($f_orderid) - 1, 1) / 3) . //Sista tecknet i ordern delat med 3. Heltal
+			rndChr(3) . //Tre slumptecken
+			(strlen($nowTime) - 5) . // Längden på tiden - 5, för att undvika överslag till 2 siffror
+			intval(substr($f_profileid, strlen($f_profileid) - 1, 1) / 2) . // Sista tecknet i profilen delat med 2. Heltal
+			substr($nowTime, 8) . //Sista (1 eller 2 st) tecknet i tiden
+			$f_orderid; //Hela orderid:t'
+			//Oj, det var mycket...hoppas att det fungerar :)
+		return $sid;
+	}
+	
+	function decodeSid($f_sid, $f_orderid, $f_profileid) {
+/*
+		!3 + t[1,2] + oid[1] + t[2,3] + oid[sista] + rndchr[2] + int2chr(pid[1])
+		+ time[4-8] + rndchr[2] + int(oid[sista]/3) + rndchr[3] + (strlen(time) - 5) +
+		int(pid[sista]/2) + time[9-10] + oid[]
+		
+		längder:
+			2 2 1 2 1 2 1 5 2 1 3 1 1 1/2 X
+*/
+		$timeLen = intval(substr($f_sid, 22, 1) + 5 - 8); //Hur många tecken är det näst sist...
+		
+		$aReturn["t12"] = substr($f_sid, 2, 2); //Tidens två första tecken
+		$aReturn["oid1"] = substr($f_sid, 4, 1); // Första tecknet i oid
+		$aReturn["t23"] = substr($f_sid, 5, 2); // Tecken 2-3 i tiden
+		$aReturn["oidsista"] = substr($f_sid, 7, 1); //Sista tecknet i oid
+		$aReturn["pid1"] = chr2int(substr($f_sid, 10, 1)); //Pidets första tecken, dekryptera oxå
+		$aReturn["time48"] = substr($f_sid, 11, 5); //Tid 4-8
+		$aReturn["oidsistad3"] = substr($f_sid, 18, 1); //Sista oid delat på tre
+		$aReturn["pidsistad2"] = substr($f_sid, 23, 1); //Sista pid/2
+		$aReturn["time910"] = substr($f_sid, 24, $timeLen); //Tidens ett(två) sista tecken
+		$aReturn["oid"] = substr($f_sid, 24 + $timeLen); //Resten är oid
+		return $aReturn; //Array Return
+	}
+	
+	function int2chr($int) { //Returnerar teckenmotsvarigheten till en siffra med början på C
+	/*
+	0 = C (067)
+	1 = D
+	2 = E
+	3 = F
+	4 = G
+	5 = H
+	6 = I
+	7 = J
+	8 = K
+	9 = L (076)
+	*/
+		return chr($int + 67); //Ökar värdet med 67, dvs C
+	}
+	function chr2int($chr) { // Gör omvänt operation mot int2chr, dvs omvandlar tecken till siffra
+		return ord($chr) - 67; //Tänk själv...
+	}
+	
+	function rndChr($len) { //Returnerar ett slumpmässigt tecken. Längden bestäms av parametern
+			srand(time()); // Starta slumptalsgeneratorn				
+		for($i = 0; $i < $len; $i++) { //Gör hela länden
+				$foo = rand(0, 1);
+				switch($foo) {
+					case 1: 
+						$random = rand(65, 90); //Bara bokstäver
+						break;
+					case 0:
+						$random = rand(97, 122);
+						break;	
+				}
+			$return_string .= chr($random);		
+			$random = "65";
+		}
+	return $return_string;
+	}
+	
+	// Kolla om tiden är ok
+	function validTime($sid, $orderid, $profileid) {
+		if($profileid == "w") $profileid = "47"; //För att kunna använda profileid här oxå. Höjer security.
+		
+		$failed = false; //Har inte failat än.
+		
+		$sidContent = decodeSid($sid, $orderid, $profileid); //Hämta delarna i siden.
+
+		//Stämmer tiden i början?
+		if(substr($sidContent["t12"], 1, 1) != substr($sidContent["t23"],0,1))
+			$failed = "time1";
+		//Är sidet över två timmar gammalt?		
+		$sidTime =  //Lägg ihop hela tiden med hjälp av vad vi fått från sidet.
+			$sidContent["t12"] . 
+			substr($sidContent["t23"],1,1) . 
+			$sidContent["time48"] . 
+			$sidContent["time910"]; //Hela tiden
+			
+		if ((time() - $sidTime) / 3600 > 2) //Är den äldre än två timmar?
+			$failed = "oldsid";
+		
+		//Stämmer orderid:t med det vi vet?
+		if ($sidContent["oid"] != $orderid)
+			$failed = "Oid != orderid";
+		
+		//Stämmer första bokstaven i orderid:t?
+		if (substr($sidContent["oid"],0,1) != $sidContent["oid1"]) //Första tecknet	
+			$failed = "oid internal";
+			
+		//Stämmer orderid:t igen?
+		if (substr($sidContent["oid"], strlen($sidContent["oid"]) - 1, 1) != $sidContent["oidsista"]) 
+			$failed = "oid internal 2";
+		//Stämmer sista orderidt delat på 3 i båda fallen?
+		if ($sidContent["oidsistad3"] != intval(($sidContent["oidsista"]) / 3))
+			$failed = "oid / 3";
+
+		//Stämmer pidets första tecken med vad vi vet?
+		if ($sidContent["pid1"] != substr($profileid, 0, 1))	
+			$failed = "pid 1";
+		//Stämmer pidets sista delat med två?
+		if ($sidContent["pidsistad2"] != intval(substr($profileid, strlen($profileid) - 1, 1) / 2))
+			$failed = "pid / 2";
+
+		//Stämmer det så här långt är det okej...antingen är de korrekta, eller så fuskar de bra. :=)
+		if ($failed == false) //Alla glada
+			return true;
+		else {//Misslyckades
+			//echo $failed; //Avremma om du vill veta vad som gick snett med SID-verifieringen
+			return false;
+			}
+	}
+
+	function JustValidSIDs($profileid, $orderid, $sid, $page) {
+		if(!validTime($sid, $orderid, $profileid)) {
+			Header("Location: $page");
+			exit();
+		}
+	}
+	
+?>

@@ -1,0 +1,146 @@
+<?
+	require("../script/const.igp"); // V&aring;ra konstanter
+	require("../script/lang.igp");
+	require("../script/common.igp");
+
+ // R&auml;kna antalet tr&auml;ffar p&aring; den h&auml;r sidan
+ counter();
+?>
+<HTML>
+   <HEAD>
+      <TITLE>
+         IGP - Om f&ouml;retaget
+      </TITLE>
+      <LINK rel="STYLESHEET" type="text/css" href="../css/default.css">
+   </HEAD>
+   <? include("../header_sub.igp"); ?>
+   <BODY>
+      <TABLE width="600" cellspacing="0" cellpadding="3" border="0">
+         <TR>
+            <TD align="center">
+               <IMG src="../images/nothing.gif" width="1" height="1" hspace=
+               "300" vspace="0" alt=""><BR clear="all">
+                
+               <CENTER>
+                  <IMG src="../images/logo.gif" width="400" height="69" alt=
+                  "Intergalactic Pizza." align="center" hspace="0" vspace="5">
+                  <BR clear="all">
+                  <FONT face="arial,helvetica" size="1" class="quicklink"> 
+				  	<A href="../order.igp?lang=<? echo $lang ?>">Best&auml;ll pizza</A> | <A href="../member.igp?lang=<? echo $lang ?>">Bli medlem</A> | <A href="../main.igp?lang=<? echo $lang; ?>">Tillbaka till huvudsidan</A>
+	     		  </FONT>
+               </CENTER>
+            </TD>
+         </TR>
+         <TR>
+            <TD>
+
+		<FONT face="arial,helvetica" color="#FFC000">                
+               <H1>
+                   Om IGP
+               </H1>
+		</FONT>
+                
+		<FONT face="arial,helvetica" size="2"> 
+               	  <DIV class="txt">
+                  &Aring;ret var 1998
+                  n&auml;r Intergalactic Pizza f&ouml;r f&ouml;rsta
+                  g&aring;ngen landade p&aring; webben. De st&ouml;rsta
+                  pizza&aring;terf&ouml;rs&auml;ljarna hade f&aring;tt en ny
+                  konkurrent.<BR>
+                  &nbsp;&nbsp;&nbsp;Aff&auml;rsid&eacute;n var att l&aring;ta kunderna
+                  best&auml;lla ur ett brett sortiment av pizzaprodukter till
+                  l&aring;ga priser. Verksamheten blev framg&aring;ngsrik och
+                  Intergalactic Pizza etablerades i snabb takt som ett av
+                  Universums ledande pizzaorderf&ouml;retag.<BR>
+                  <BR>
+                  &nbsp;&nbsp;&nbsp;F&ouml;rs&auml;ljningen &ouml;ver Internet &ouml;kade
+                  snabbt och elektronisk best&auml;llning blev ett av
+                  f&ouml;retagets viktigaste fokusomr&aring;den. Intergalactic
+                  Pizza - idag ett av v&auml;rldens ledande f&ouml;retag inom
+                  v&aring;r bransch - tillhandah&aring;ller ett
+                  helt&auml;ckande produktutbud genom Internet.
+                  Aff&auml;rsid&eacute;n &auml;r, enkelt uttryckt, att ge
+                  b&aring;de privatpersoner och f&ouml;retag m&ouml;jlighet att
+                  snabbt best&auml;lla pizza, f&ouml;r att sedan ha tid
+                  &ouml;ver till viktigare saker. F&ouml;r det &auml;r just
+                  f&ouml;retag och privatpersoner som &auml;r den prim&auml;ra
+                  m&aring;lgruppen f&ouml;r Intergalactic Pizzas
+                  f&ouml;rs&auml;ljning.<BR>
+                  <BR>
+                  &nbsp;&nbsp;&nbsp;Personer fr&aring;n Frankrike, England, Sverige och Norge
+                  best&auml;ller pizza fr&aring;n oss. De l&aring;ga priserna
+                  och m&ouml;jligheten att best&auml;lla snabbt och enkelt
+                  hemifr&aring;n g&ouml;r naturligtvis ocks&aring; att allt
+                  fler privatpersoner uppt&auml;cker f&ouml;rdelarna med
+                  Intergalactic Pizza.<BR>
+                  &nbsp;&nbsp;&nbsp;Antalet best&auml;llningar uppgick under &aring;r 1999
+                  till &ouml;ver 3000.<BR>
+                  <BR>
+                  </FONT>
+               </DIV>
+                
+               <FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                  F&ouml;rm&aring;nliga priser p&aring;
+                  kvalitetsprodukter
+               </H2>
+		</FONT>
+                
+
+		<FONT face="arial,helvetica" size="2">
+               <DIV class="txt">
+                  V&aring;rt m&aring;l &auml;r att alltid kunna erbjuda de b&auml;sta produkterna
+                  fr&aring;n ledande producenter till marknadens l&auml;gsta
+                  priser. Du ska alltid k&auml;nna att du g&ouml;r ett bra val
+                  n&auml;r du best&auml;ller fr&aring;n Intergalactic
+                  Pizza.
+               </DIV>
+		</FONT>
+                
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Snabb tillg&aring;ng till support
+               </H2>
+		</FONT>
+                
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+                  Intergalactic Pizzas
+                  kundtj&auml;nstavdelning bist&aring;r dig med kostnadsfri
+                  experthj&auml;lp dygnet runt. Maila bara till
+                  <A HREF="mailto:support@igp.cx">support@igp.cx</A>.
+               </DIV>
+		</FONT>
+                
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Skr&auml;ddarsydd e-handelsl&ouml;sning
+               </H2>
+		</FONT>
+                
+		<FONT face="arial,helvetica" size="2">
+               <DIV class="txt">
+                   Alla kunder hos
+                  Intergalactic Pizza har m&ouml;jlighet att f&aring; en unik
+                  best&auml;llning med skr&auml;ddarsytt sortiment,
+                  m&ouml;jlighet att lagra egenkomponerade pizzor och inbyggd
+                  faktureringsfunktion.<BR>
+                  <BR>
+                   <A href="../main.igp?lang=<? echo $lang ?>">
+                  Tillbaka</A>
+               </DIV>
+		</FONT>
+            </TD>
+         </TR>
+         <TR>
+            <TD colspan="2" align="center">
+               <BR>
+                <!--Copyright--> 
+               <HR size="1" noshade>
+               <FONT face="arial,helvetica" size="2" class="copy" color="#A0A0A0"> Copyright &copy; 2000 Intergalactic Pizza Corporation</FONT>
+            </TD>
+         </TR>
+      </TABLE>
+   </BODY>
+</HTML>
+

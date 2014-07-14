@@ -1,0 +1,61 @@
+<? 
+	require("../script/const.igp");
+	require("../script/lang.igp"); 
+	
+	$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+	
+?>
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">		
+		<TITLE><? lang($lang, 10117000); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10117001); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10117002); ?> <B><? echo $username ?></B>, <? lang($lang, 10117003); ?> <A HREF="../member.igp?lang=<? echo $lang ?>"><? lang($lang, 10117004); ?></A>.
+		<FORM ACTION="main.igp" METHOD="post">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">		
+			<TABLE BORDER=0>
+				<TR>
+					<TD><FONT FACE="arial,helvetica" SIZE=2><? lang($lang, 10117005); ?>:</FONT><BR>
+						<INPUT TYPE="text" NAME="username" VALUE="<? echo $username; ?>" MAXLENGTH=50>&nbsp;&nbsp;
+					</TD>
+					<TD><FONT FACE="arial,helvetica" SIZE=2><? lang($lang, 10117006); ?>:</FONT><BR>
+						<INPUT TYPE="password" NAME="password" VALUE="" MAXLENGTH=50>&nbsp;&nbsp;
+					</TD>
+					<TD>&nbsp;<BR><INPUT TYPE="submit" VALUE=" <? lang($lang, 10117007); ?> &gt;&gt;&gt;"></TD>
+				</TR>
+			</TABLE>
+			<INPUT TYPE="hidden" NAME="first" VALUE=1>
+		</FORM>
+		</DIV>
+		</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>

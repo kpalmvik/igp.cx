@@ -1,0 +1,198 @@
+<?
+	require("../script/time.igp");	
+	require("../script/const.igp");
+
+	//Ligger här av någon myskoid anledning...men det fungerar! :)
+	JustValidSIDs($profileid, $orderid, $sid, "../order/sid500.igp?lang=$lang");
+
+	require("../script/lang.igp");
+	require("payfunctions.igp");
+	
+
+	// Den här sidan skall definitivt aldrig cachas! Förhindra det!
+	  header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");             // Date in the past
+	  header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); // always modified
+	  header("Cache-Control: no-cache, must-revalidate");           // HTTP/1.1
+	  header("Pragma: no-cache");                                   // HTTP/1.0	
+
+
+
+	//Räkna lite allmänt nedanför här...vet inte mer :)
+				$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD); //Öppna databasen som vanligt...
+
+
+				if($profileid == "w") { //om användaren är en icke-medlem, dvs har användardata i ordertabellen			
+
+					// Fråga om lite personliga uppgifter från ordertabellen
+					$result = pg_Exec("SELECT firstname, lastname, planet, address, postcode, phonenumber, email, homesite, currency FROM igpOrder WHERE orderid='$orderid'");
+					$cur = pg_Result($result, 0, "currency"); //Hämta aktuell valuta för ordern
+				}
+
+				else { //om nu användaren är medlem finns hans info i igpProfiles istället
+
+					//Eftersom valutan alltid lagras i ordern, så gör vi så här...
+					$result = pg_Exec("SELECT currency FROM igpOrder WHERE orderid='$orderid'");
+					$cur = pg_Result($result, 0, "currency");
+
+					// Gör den vanliga frågan, fast till profildatabasen.
+
+					$result = pg_Exec("SELECT firstname, lastname, planet, address, postcode, phonenumber, email, homesite FROM igpProfiles WHERE profileid='$profileid'");
+				}		
+
+				// Gör en bunt med överflyttningar från resultat till variabler
+				$firstname = pg_Result($result, 0, "firstname");
+				$lastname = pg_Result($result, 0, "lastname");
+				$planet = pg_Result($result, 0, "planet");
+				$address = pg_Result($result, 0, "address");
+				$postcode = pg_Result($result, 0, "postcode");
+				$phonenumber = pg_Result($result, 0 ,"phonenumber");	
+				$email = pg_Result($result, 0, "email");
+				$homesite = pg_Result($result, 0, "homesite");
+				
+			$result = pg_Exec("SELECT value, name from igpCurrency WHERE currency='$cur'");
+			$curMulti = pg_Result($result, 0, "value"); // tal som du ska dela databaspriset med för att få lokal valuta
+			$curName = pg_Result($result, 0, "name"); // Valutans riktiga namn	
+?>	
+
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">		
+		<STYLE>
+		<!--
+		.pl_header {
+					color: #FFC000;
+					font-family: arial,helvetica,sans-serif;
+					size: 14pt;
+		}
+		-->
+		</STYLE>		
+		<TITLE><? lang($lang, 10101000); ?></TITLE>
+	</HEAD>
+<? 
+	include("../header_sub.igp") //headern, ej att förglömma
+?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10101001); ?></H1>
+		<H2><? lang($lang, 10101002); ?></H2>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10101003); ?> <? echo $firstname . " " . $lastname?>. <? lang($lang, 10101004); ?> <? echo $curName . " (" . $cur ?>).
+		</DIV>
+		</FONT>
+		<P>
+		<BR CLEAR="all">
+		<TABLE WIDTH="100%" ALIGN="center" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+			<TR>
+				<TD WIDTH=500><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10101005); ?></B></FONT></TD>
+				<TD WIDTH=50><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10101006); ?></B></FONT></TD>
+				<TD WIDTH=50><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10101007); ?></B></FONT></TD>
+			</TR>
+			<TR>
+				<TD COLSPAN=3><HR></TD>
+			</TR>
+			<?			
+				EchoConfirmList();
+			?>
+		</TABLE>
+		<BR>
+		<FONT FACE="arial,helvetica" SIZE=3 CLASS="txt">
+		<? lang($lang, 10101008); ?> 
+		<? echo $sumMoney. " " . $cur ?> 
+		<? lang($lang, 10101009); ?> 
+		<? echo $sumPizzas ?>
+		<? lang($lang, 10101010); ?>
+		<BR><BR>
+		<FORM ACTION="../order/pizzalist.igp" METHOD="post">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">
+			<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur ?>">
+			<INPUT TYPE="hidden" NAME="update" VALUE="true">
+			<INPUT TYPE="submit" VALUE=" <? lang($lang, 10101011); ?> ">
+		</FORM>
+		<BR><P>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000"><H2><? lang($lang, 10101012); ?></H2></FONT>
+		<? lang($lang, 10101013); ?><BR>
+		<TABLE BORDER=0>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? lang($lang, 10101014); ?></B></FONT></TD>
+				<TD ROWSPAN=7>&nbsp;&nbsp;</TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? echo $firstname . " " . $lastname ?></B></FONT></TD>
+			</TR>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? lang($lang, 10101015); ?></B></FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $address ?></FONT></TD>
+			</TR>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt">&nbsp;</FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $postcode ?></FONT></TD>
+			</TR>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? lang($lang, 10101016); ?></B></FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $phonenumber ?></FONT></TD>
+			</TR>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? lang($lang, 10101017); ?></B></FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo return_lang($lang, $planet) ?></FONT></TD>
+			</TR>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? lang($lang, 10101018); ?></B></FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $email ?></FONT></TD>
+			</TR>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? lang($lang, 10101019); ?></B></FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? if($homesite!="http://") echo $homesite ?></FONT></TD>
+			</TR>
+		</TABLE><BR CLEAR="all">
+		<FORM ACTION="../order/changepersonalinformation.igp" METHOD="post">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">
+			<INPUT TYPE="hidden" NAME="byorder" VALUE="true">
+			<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur ?>">
+			<INPUT TYPE="submit" VALUE=" <? lang($lang, 10101020); ?> ">
+		</FORM>
+		</FONT>
+		<P><BR>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000"><H2><? lang($lang, 10101021); ?></H2></FONT>
+		<FONT FACE="arial,helvetica" SIZE=3 CLASS="txt">
+			<? lang($lang, 10101022); ?>
+		</FONT>
+		<BR>
+		<FORM ACTION="order.igp" METHOD="post">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">
+			<INPUT TYPE="submit" VALUE=" <? lang($lang, 10101023); ?> " >
+		</FORM>
+		</DIV>
+		</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>

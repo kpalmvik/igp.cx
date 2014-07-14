@@ -1,0 +1,243 @@
+<?
+	function EchoConfirmList() {
+		global $db, $orderid, $profileid, $sid, $lang, $sumPizzas, $sumMoney, $curMulti;
+
+		$sumPizzas = 0; // Nollställ variabler, kan krångla annars
+		$sumMoney = 0;
+
+		// ------------------------
+		// Läs in de fasta pizzorna
+		// ------------------------
+		$result = pg_Exec($db, "SELECT igporderpizza.count, igppizzas.pizzaname, igppizzas.price, igppizzas.id FROM igpPizzas, igpOrderPizza WHERE igpOrderPizza.pizzaid > -1 AND igpOrderPizza.orderid = $orderid and igpPizzas.id = (igpOrderPizza.pizzaid + 1)");
+		for($i = 0; $i < pg_NumRows($result); $i++) {
+			echo "\n<TR>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=2 CLASS=\"txt\"><B>";
+			echo pg_Result($result, $i, "pizzaname") . "</B></FONT></TD>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=2 CLASS=\"txt\">";
+			echo pg_Result($result, $i, "count") . "</FONT></TD>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=2 CLASS=\"txt\">";
+			$pizzas = pg_Result($result, $i, "count");
+			$price = pg_Result($result, $i, "price");
+			echo intval(($price * $pizzas) / $curMulti) . "</FONT></TD>\n</TR>\n";
+
+			$pizza = pg_Result($result, $i, "id");
+
+			// Totalsummor
+			$sumPizzas += $pizzas;
+			$sumMoney += intval(($price * $pizzas) / $curMulti);	
+		}
+		
+		// -----------------------
+		// Läs in de egna pizzorna
+		// -----------------------
+		
+		// Hämta favoritpizzorna		
+		for($i = 0; $i < 5; $i++) {
+			$result = pg_Exec("SELECT pizzaid, count FROM igpOrderPizza WHERE orderid = $orderid AND pizzaid = (-1 * ($i + 1))");
+			if(pg_NumRows($result)) { // Pizzaid -1 eller -2, etc finns
+				$count = pg_Result($result, 0, "count");
+				if($count) {
+					if($profileid == "w")
+						$result = pg_Exec("SELECT pizza" . ($i + 1) . " FROM igpOrder WHERE orderid = $orderid");
+					else
+						$result = pg_Exec("SELECT pizza" . ($i + 1) . " FROM igpProfiles WHERE profileid = $profileid");
+
+					// Ta reda på ingredienserna
+					$ingres = pg_Exec("SELECT igpIngredients.price, igpIngredients.ingredientname FROM igpIngredients, igpOrderPizza WHERE igpOrderPizza.orderid = $orderid AND igpOrderPizza.pizzaid = " .  (-1 * ($i + 1)) . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+					$price = 2;
+					for($j = 0; $j < pg_NumRows($ingres); $j++) {
+						$price += pg_Result($ingres, $j, "price");
+						$ingredienser .= pg_Result($ingres, $j, "ingredientname") . ", ";
+					}
+					$ingredienser = substr($ingredienser, 0, strlen($ingredienser) - 2); //Plocka bort överflödiga komman i slutet
+
+					echo "<TR>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=2 CLASS=\"txt\"><B>" . pg_Result($result, 0, "pizza" . ($i + 1)) . "</B></FONT><BR>\n\t\t<SMALL><FONT FACE=\"arial,helvetica\" SIZE=1 CLASS=\"txt\">" . 
+						$ingredienser . "</FONT></SMALL></TD>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=2 CLASS=\"txt\">$count</FONT></TD>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=2 CLASS=\"txt\">" . intval(($price /$curMulti) * $count) . 
+						"</FONT></TD>\n</TR>";
+					$ingredienser = ""; // nollställ, annars krånglar det
+					$sumPizzas += $count;
+					$sumMoney += intval(($price * $count) / $curMulti);
+				}
+			}
+		}
+		
+		// Hämta de bara namngivna pizzorna
+		$result = pg_Exec("SELECT name, pizzaid FROM igpOrderPizzaNames WHERE orderid = $orderid");
+		for($i = 0; $i < pg_NumRows($result); $i++) {
+			$countres = pg_Exec("SELECT igpOrderPizza.count, igpIngredients.price, igpIngredients.ingredientName FROM igpOrderPizza, igpIngredients WHERE igpOrderPizza.orderid = $orderid AND igpOrderPizza.pizzaid = " . pg_Result($result, $i, "pizzaid") . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+			$count = pg_Result($countres, 0, "count");
+			
+			$price = 2;
+			for($j = 0; $j < pg_NumRows($countres); $j++) {
+				$price += pg_Result($countres, $j, "price");
+				$ingredienser .= pg_Result($countres, $j, "ingredientname") . ", ";
+			}
+			$ingredienser = substr($ingredienser, 0, strlen($ingredienser) - 2); //Plocka bort överflödiga komman i slutet
+
+			echo "<TR>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=3 CLASS=\"txt\"><B>" . pg_Result($result, $i, "name") . "</B></FONT><BR>\n\t\t<SMALL><FONT FACE=\"arial,helvetica\" SIZE=1 CLASS=\"txt\">" . $ingredienser . 
+				"</SMALL></FONT></TD>\n\t<TD><FONT FACE=\"arial,helvetica\" SIZE=3 CLASS=\"txt\">$count</FONT></TD>\n\t<TD>" . intval(($price / $curMulti)* $count) . "</TD>\n</TR>";
+			$ingredienser =""; //Nollställ, annars kan folk få för mycket på pizzan.
+			$sumPizzas += $count;
+			$sumMoney += intval(($price * $count) / $curMulti);
+		}
+				
+		?>
+			<TR>
+				<TD COLSPAN=3><HR></TD>
+			</TR>
+			<TR>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? lang($lang, 10104000); ?></B></FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? echo $sumPizzas; ?></B></FONT></TD>
+				<TD><FONT FACE="arial,helvetica" SIZE=3 COLOR="#FFC000" CLASS="pl_header"><B><? echo intval($sumMoney); ?></B></FONT></TD>
+			</TR>
+		<?
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+// En funktion för att hämta en bunt med tr-td till pizzaordern (på slutet alltså). Gör inget mer spännande än ovan typ...
+	function echoOrderList() {
+		global $db, $orderid, $profileid, $sid, $lang, $sumPizzas, $sumMoney, $curMulti;
+
+		$sumPizzas = 0; // Nollställ variabler, kan krångla annars
+		$sumMoney = 0;
+
+		// ------------------------
+		// Läs in de fasta pizzorna
+		// ------------------------
+		$result = pg_Exec($db, "SELECT igporderpizza.count, igppizzas.pizzaname, igppizzas.price, igppizzas.id FROM igpPizzas, igpOrderPizza WHERE igpOrderPizza.pizzaid > -1 AND igpOrderPizza.orderid = $orderid and igpPizzas.id = (igpOrderPizza.pizzaid + 1)");
+		for($i = 0; $i < pg_NumRows($result); $i++) {
+			$pizza_name = pg_Result($result, $i, "pizzaname"); //pizzans namn
+			$count = pg_Result($result, $i, "count"); //antal
+			$price = pg_Result($result, $i, "price"); //priset, i spacedollar
+
+			
+			?>
+			<TR>
+				<TD VALIGN="top"><IMG SRC="../images/pizico_done.gif" WIDTH=10 HEIGHT=10 BORDER=0 HSPACE=0 VSPACE=3 ALT="<? lang($lang, 10104001); ?>"></TD>
+				<TD ALIGN="left"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $pizza_name?></FONT></TD>
+				<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $count ?></FONT></TD>
+				<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo intval(($price * $count) / $curMulti) ?></FONT></TD>
+				
+				<TD>&nbsp;</TD>
+			</TR>		
+			<?
+			// Totalsummor
+			$sumPizzas += $count;
+			$sumMoney += intval(($price * $count) / $curMulti);
+			
+
+		}
+		// -----------------------
+		// Läs in de egna pizzorna
+		// -----------------------
+		
+		// Hämta favoritpizzorna		
+		for($i = 0; $i < 5; $i++) {
+			$result = pg_Exec("SELECT pizzaid, count FROM igpOrderPizza WHERE orderid = $orderid AND pizzaid = (-1 * ($i + 1))");
+			if(pg_NumRows($result)) { // Pizzaid -1 eller -2, etc finns
+				$count = pg_Result($result, 0, "count");
+				if($count) {
+					if($profileid == "w")
+						$result = pg_Exec("SELECT pizza" . ($i + 1) . " FROM igpOrder WHERE orderid = $orderid");
+					else
+						$result = pg_Exec("SELECT pizza" . ($i + 1) . " FROM igpProfiles WHERE profileid = $profileid");
+					
+					// Ta reda på ingredienserna
+					$ingres = pg_Exec("SELECT igpIngredients.price, igpIngredients.ingredientname FROM igpIngredients, igpOrderPizza WHERE igpOrderPizza.orderid = $orderid AND igpOrderPizza.pizzaid = " .  (-1 * ($i + 1)) . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+					$price = 2;
+					for($j = 0; $j < pg_NumRows($ingres); $j++) {
+						$price += pg_Result($ingres, $j, "price");
+						$ingredienser .= pg_Result($ingres, $j, "ingredientname") . ", ";
+					}
+					$pizza_name = pg_Result($result, 0, "pizza" . ($i + 1) ); //pizzans namn				
+					$ingredienser = substr($ingredienser, 0, strlen($ingredienser) - 2); //Plocka bort överflödiga komman i slutet
+
+					
+		
+			
+					?>
+					<TR>
+						<TD VALIGN="top"><IMG SRC="../images/pizico_fav.gif" WIDTH=10 HEIGHT=10 BORDER=0 HSPACE=0 VSPACE=3 ALT="<? lang($lang, 10104002); ?>"></TD>
+						<TD ALIGN="left"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $pizza_name?><BR><FONT SIZE="-1"><SMALL><? echo $ingredienser ?></SMALL></FONT></TD>
+						<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $count ?></FONT></TD>
+						<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo intval(($price * $count) / $curMulti) ?></FONT></TD>
+						<TD>&nbsp;</TD>
+					</TR>		
+					<?
+
+					$ingredienser = ""; // nollställ, annars krånglar det
+					// Totalsummor
+					$sumPizzas += $count;
+					$sumMoney += intval(($price * $count) / $curMulti);
+					
+				}
+			}
+		}
+		
+		// Hämta de bara namngivna pizzorna
+		$result = pg_Exec("SELECT name, pizzaid FROM igpOrderPizzaNames WHERE orderid = $orderid");
+		for($i = 0; $i < pg_NumRows($result); $i++) {
+			$countres = pg_Exec("SELECT igpOrderPizza.count, igpIngredients.price, igpIngredients.ingredientName FROM igpOrderPizza, igpIngredients WHERE igpOrderPizza.orderid = $orderid AND igpOrderPizza.pizzaid = " . pg_Result($result, $i, "pizzaid") . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+			$count = pg_Result($countres, 0, "count");
+			
+			$price = 2;
+			for($j = 0; $j < pg_NumRows($countres); $j++) {
+				$price += pg_Result($countres, $j, "price");
+				$ingredienser .= pg_Result($countres, $j, "ingredientname") . ", ";
+			}
+			$ingredienser = substr($ingredienser, 0, strlen($ingredienser) - 2); //Plocka bort överflödiga komman i slutet	
+
+			$pizza_name = pg_Result($result, $i, "name"); //pizzans namn
+
+		
+			?>
+			<TR>
+				<TD VALIGN="top"><IMG SRC="../images/pizico_own.gif" WIDTH=10 HEIGHT=10 BORDER=0 HSPACE=0 VSPACE=3 ALT="<? lang($lang, 10104003); ?>"></TD>
+				<TD ALIGN="left"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $pizza_name?><BR><FONT SIZE="-1"><SMALL><? echo $ingredienser ?></SMALL></FONT></TD>
+				<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo $count ?></FONT></TD>
+				<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? echo intval(($price * $count) / $curMulti) ?></FONT></TD>
+				<TD>&nbsp;</TD>
+			</TR>		
+			<?
+			$ingredienser = ""; //Nollställ
+			// Totalsummor
+			$sumPizzas += $count;
+			$sumMoney += intval(($price * $count) / $curMulti);
+
+		}
+				
+	}
+?>
+

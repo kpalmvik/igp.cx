@@ -1,0 +1,79 @@
+<?php
+ 
+	// lang skriver ut texten för ett språkid
+
+	// $lang - aktuellt språk
+	// $lid  - id som identifierar textstycket
+	function lang($f_lang, $f_lid) {
+		echo return_lang($f_lang, $f_lid); //anropar funktionen nedan och skriver ut resultatet
+	}
+
+	// return_lang returnerar texten för ett språkid
+
+	// $lang - aktuellt språk
+	// $lid  - id som identifierar textstycket
+	
+	// returnerar texten som hör till nycklarna
+	function return_lang($f_lang, $f_lid) {
+		$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+		$result = pg_Exec("SELECT text FROM igpLanguage WHERE lid='$f_lid' AND lang='$f_lang'"); // retrieve:ar text
+		return pg_result($result, 0, "text");
+	}	
+	
+	/* GetLang används för att ta reda på vilket språk
+	   som skall användas vid t.ex. 404, då man förmodligen
+	   inte har angett lang som parameter.
+	   
+	   Finns lang används den, annars plockas första existerande
+	   språk ut från läsarens medskickade accept-language.
+	   Gäller inget av detta används engelska (en)
+	   
+	   parametrar - inga
+	   returnerar - språk-id (ex. "en")
+	*/
+	
+	function GetLang() {
+
+		global $lang; //hämta med lang-variabeln, om den fanns innan
+		if ($lang == "") // Om vi aldrig fatt ett sprak id
+		{ 
+			$headers = getallheaders(); // plocka ut alla headers från dokumentet, bla accept-lang
+			while (list($header, $value) = each($headers)) //gå igenom för att hitta accept lang
+			{ 
+			    if(strtolower($header) == "accept-language")
+					$acceptlang = $value; // lägg innehållet i $acceptlang
+			}
+			
+			// acceptlang kommer att se ut någonting liknande
+			// sv,ar-jo;q=0.7,en;q=0.3  
+			// vi plockar här ut de olika delarna och lägger dem i en array som
+			// [1]=sv [2] = ar-jo ...osv
+			$acceptlang = explode(",", $acceptlang);
+
+			// anslut till databasen, för nu ska vi kolla fält
+			$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+				
+			for($i = 0; $i < count($acceptlang); $i++) { // gå igenom hela arrayen, eller tills vi hittat höstacken...
+
+				//kortar ner alla element till två tecken,  glöm inte att trimma (annars buggar ie2)
+				$tmpLang = substr(ltrim($acceptlang[$i]), 0, 2);
+				
+				$result = pg_Exec("SELECT lang FROM igpLanguage WHERE lang='$tmpLang'");
+
+			if(pg_NumRows($result) > 0) { //språket finns, vi har hittat det vi letar efter
+					$lang = $tmpLang; //sätt språkid rätt
+					break; //brejka loss lite, annars får vi för många språk att hålla koll på
+				}
+
+			}
+	
+			if($lang == "")  // om språket fortfarande inte är satt
+				$lang = "sv"; // så sätt till engelska.
+
+			
+			// nu har vi fått rätt språk i variabeln lang, oavsett om användaren inte valt språk - 
+			// dags att börja jobba. :)	
+		}
+		return $lang;
+	}	
+?>

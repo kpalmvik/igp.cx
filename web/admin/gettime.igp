@@ -1,0 +1,12 @@
+<HTML>
+<HEAD>
+<TITLE>Datum från UNIX-timestamp</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFC000">
+<?
+  echo time();
+echo "<BR><BR>";
+  echo strftime("%X %x", $tid);
+?>
+</BODY>
+</HTML>

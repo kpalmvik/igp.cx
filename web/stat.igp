@@ -1,0 +1,67 @@
+<?php	
+
+	require("script/const.igp");
+	require("script/common.igp");
+?>
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="css/default.css">
+		<TITLE>Welcome to Intergalactic Pizza</TITLE>
+	</HEAD>
+</HEAD>
+<BODY BGCOLOR="#363636" TEXT="#E0E0E0" LINK="#FFC000" VLINK="#FFC000" ALINK="#FFC000">
+<CENTER>
+	<TABLE WIDTH=500 BORDER=0 CELLSPACING=0 CELLPADDING=0>
+	<TR>
+		<TD ALIGN="left">
+			<FONT FACE="arial,helvetica">
+			<CENTER>
+				<IMG SRC="images/logo.gif" WIDTH=400
+HEIGHT=69 ALT="Intergalactic Pizza" HSPACE=0 VSPACE=10><BR>
+			</CENTER>
+			<H2>Statistik</H2>
+			<DIV CLASS="txt">
+<TABLE BORDER=0 WIDTH=100%>
+<TR>
+	<TD><H3>Sida</H3></TD><TD><H3>Träffar</H3></TD>
+</TR>
+<?
+	error_reporting(3);
+		$db = pg_Connect("dbname = " . dbDB . " user = " . dbUSERNAME . " password = " . dbPASSWORD);	
+	$result = pg_Exec("SELECT * FROM igpCounter ORDER BY count DESC");
+	for($i = 0; $i < pg_NumRows($result); $i++) {
+		echo "<TR>\n\t<TD>";
+		$row = pg_Fetch_Row($result, $i);
+		echo "<A HREF=\"".$row[0]."\">".$row[0]."</A>";
+		echo "</TD>\n\t<TD>";
+		echo $row[1];
+		echo "</TD>\n</TR>\n";
+		$tot += $row[1];
+	}
+?>
+<TR>
+	<TD>&nbsp;</TD><TD>&nbsp;</TD>
+</TR>
+<TR>
+	<TD>Medel</TD><TD><? echo $tot/pg_NumRows($result) ?></TD>
+</TR>
+
+<TR>
+	<TD>Totalt</TD><TD><? echo $tot ?></TD>
+</TR>
+</TABLE>
+			</DIV>
+			</FONT>
+			<P>
+			<CENTER>
+				<IMG SRC="images/line.gif" WIDTH=500 HEIGHT=1 HSPACE=0 VSPACE=0 ALT="---"><BR>
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy">
+					Copyright &copy; 2000 Intergalactic Pizza Corporation. All rights reserved.
+				</FONT>
+			</CENTER>
+		</TD>
+	</TR>
+	</TABLE>
+</CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,15 @@
+CREATE TABLE igpCurrency (value float4, currency varchar(3), name  varchar(40));
+
+CREATE TABLE igpIngredients (id int4, ingredientname varchar(50), price  int4);
+
+CREATE TABLE igpLanguage (lang  varchar(2), lid varchar(10), text varchar(2048));
+
+CREATE TABLE igpOrder (orderid int8, profileid int4, firstname varchar(50), lastname varchar(50), planet int2, address varchar(50), postcode varchar(56), phonenumber varchar(30), homesite varchar(255), email varchar(255), currency varchar(3), time varchar(20), browser varchar(255), ip varchar(15), lang varchar(2), pizza1 varchar(30), pizza2 varchar(30), pizza3 varchar(30), pizza4 varchar(30), pizza5 varchar(30));
+
+CREATE TABLE igpPizzaIngredients (pizzaid int4, ingredientid int4);
+
+CREATE TABLE igpPizzaOrder (id int4, ingredientname varchar(50), price  int4);
+
+CREATE TABLE igpPizzas (id int4, pizzaname varchar(50), price int4);
+
+CREATE TABLE igpProfiles (profileid int4, username varchar(50), firstname varchar(50), lastname varchar(50), planet int2, address varchar(50), postcode varchar(56), phonenumber varchar(30), homesite varchar(255), email varchar(255), currency varchar(3), pizza1 varchar(30), pizza2 varchar(30), pizza3 varchar(30), pizza4 varchar(30), pizza5 varchar(30), latestlogin varchar(20), password varchar(50));

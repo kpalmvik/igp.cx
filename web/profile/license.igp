@@ -1,0 +1,65 @@
+<?
+include("../script/const.igp");
+include("../script/lang.igp");
+
+GetLang(); // Plocka ut ett vettigt språk
+?>
+<HTML>
+	<HEAD>
+	<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">	
+		<TITLE><? lang($lang, 10001000); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<H1><? lang($lang, 10001001); ?></H1>
+			<H2><? lang($lang, 10001002); ?></H2>
+			<DIV CLASS="txt">
+			<? lang($lang, 10001003); ?><BR>
+			&nbsp;&nbsp;&nbsp;<? lang($lang, 10001004); ?>
+			<BR>
+			</DIV>
+			<FORM ACTION="wizard.igp" METHOD="post">
+				<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+				<INPUT TYPE="hidden" NAME="step" VALUE=2>
+				<INPUT TYPE="hidden" NAME="profileid" VALUE="w">		
+				<CENTER>
+					<INPUT TYPE="submit" VALUE=" <? lang($lang, 10001005); ?> ">
+				</CENTER>
+				<BR>
+					<HR SIZE=1 NOSHADE>
+					<? lang($lang, 10001006); ?>
+					<P CLASS="txt">
+					<TT>
+						<? lang($lang, 10001007); ?><? lang($lang, 10001008); ?><BR>
+					</TT>
+				<P>
+				<CENTER>
+					<INPUT TYPE="submit" VALUE=" <? lang($lang, 10001009); ?> ">
+				</CENTER>
+			</FORM>
+		</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>

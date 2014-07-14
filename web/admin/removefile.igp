@@ -1,0 +1,53 @@
+<? 
+	switch($action): 
+		case "FA_REMOVEFILE": // Användaren väljer att läsa en fil
+			// Kolla om filen existerar
+			if(!file_exists($filename)):
+?>
+<HTML>
+	<HEAD>
+		<TITLE>Filen finns inte</TITLE>
+	</HEAD>
+	<BODY BGCOLOR="#363636">
+		<CENTER>
+			<FONT FACE="Arial" SIZE=10 COLOR="#EEE600">Filen finns inte!</FONT>
+			<BR><BR>
+			<A HREF="../" STYLE="Font-family: Arial, sans-serif; font-size: 14pt; color: #8A8A8A">Tillbaka</A>
+		</CENTER>
+	</BODY>
+</HTML>
+<?
+				exit();
+			endif;
+			
+		
+			unlink($filename);
+			Header("Location: ../");
+			break;
+		default:
+?>
+<HTML>
+	<HEAD>
+		<TITLE>Ta bort fil</TITLE>
+	</HEAD>
+	<BODY BGCOLOR="#363636">
+		<CENTER>
+			<FONT FACE="Arial" SIZE=6 COLOR="#EEE600">Skriv in filnamn</FONT>
+			<BR><BR>
+			<TABLE WIDTH="49%" BORDER=0 CELLSPACING=0 CELLPADDING=0>
+				<TR>
+					<TD ALIGN="center">
+						<FORM ACTION="removefile.igp" METHOD="post">
+							<INPUT TYPE="hidden" NAME="action" VALUE="FA_REMOVEFILE">
+							<FONT FACE="Arial" SIZE=3 COLOR="#EEE600">Filnamn:</FONT> <INPUT TYPE="text" NAME="filename" VALUE="/home/httpd/html/kalle.dat" SIZE=50>
+							<INPUT TYPE="submit" VALUE="Ta bort fil">
+						</FORM>
+					</TD>
+				</TR>
+			</TABLE>
+		</CENTER>
+	</BODY>
+</HTML>
+<?
+	endswitch;
+?>

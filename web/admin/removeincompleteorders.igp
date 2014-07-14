@@ -1,0 +1,86 @@
+<HTML>
+	<HEAD>
+		<TITLE>IGP - Ta bort ofullständiga beställningar</TITLE>
+	</HEAD>
+	<BODY BGCOLOR="#363636" TEXT="#E0E0E0" LINK="#CCCC99" VLINK="#CCCC99" ALINK="#CCCC99" MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 RIGHTMARGIN=0>
+		<CENTER><TABLE WIDTH=100% ALIGN=center BORDER=0 CELLSPACING=0 CELLPADDING=0>
+			<TR>
+				<TD BGCOLOR="#646464">
+				<IMG SRC="../../main/images/welcome.gif" WIDTH=305 HEIGHT=19 BORDER=0 ALT="Välkommen till Intergalactic Pizza" ALIGN=left HSPACE=5 VSPACE=3><IMG SRC="../../main/images/www.gif" WIDTH=90 HEIGHT=19 BORDER=0 ALT="www.igp.cx" ALIGN=right HSPACE=10 VSPACE=3>
+				</TD>
+			</TR>
+			<TR>
+				<TD WIDTH=200 BGCOLOR="#646464" BACKGROUND="../../main/images/skyline.gif"><IMG SRC="../../main/images/star1.gif" WIDTH=200 HEIGHT=19 BORDER=0 ALT="Pizza du kan se i" HSPACE=0 VSPACE=0></TD>
+			</TR>
+			<TR>
+				<TD WIDTH=200><IMG SRC="../../main/images/star2.gif" WIDTH=200 HEIGHT=20 BORDER=0 ALT="stjärnorna efter" HSPACE=0 VSPACE=0></TD>
+			</TR>
+		</TABLE><BR CLEAR="all">
+		
+		<?
+		
+			if(!$function) { ?>
+				
+				Det här kommandot kommer att radera en stor del av databasen!
+				<BR><BR><BR>
+				<FORM ACTION="removeincompleteorders.igp" METHOD="post">
+					<INPUT TYPE="hidden" NAME="function" VALUE=1>
+					<INPUT TYPE="submit" VALUE="Jaja, fortsätt...">
+				</FORM>
+			
+			<? }
+			
+			if($function == 1) { ?>
+				
+				Det här kommandot kommer fortfarande att radera en stor del av databasen!
+				<BR>
+				Är du verkligen säker på att du vill göra det här?
+				<BR><BR><BR>
+				<FORM ACTION="removeincompleteorders.igp" METHOD="post">
+					<INPUT TYPE="hidden" NAME="function" VALUE=2>
+					<INPUT TYPE="submit" VALUE="Men för #$!§-[beep], fortsätt...">
+				</FORM>
+			
+			<? }
+			
+			if($function == 2) { ?>
+				
+				Det här kommandot har fortfarande inte ändrat sig och kommer att radera en stor del av databasen!
+				<BR>
+				Är du VERKLIGEN RIKTIGT SÄKER på att du vill göra det här?
+				<BR><BR><BR>
+				<FORM ACTION="removeincompleteorders.igp" METHOD="post">
+					<INPUT TYPE="hidden" NAME="function" VALUE=3>
+					<INPUT TYPE="submit" VALUE="AAAAAAAAAAAARRRGGgghhhhhhhh.........">
+				</FORM>
+			
+			<? }
+			
+			if($function == 3) { ?>
+				
+				<?
+
+					// Anslut gärna till en databas
+					require("../script/const.igp");
+					require("../script/lang.igp");
+				
+					$db = pg_Connect("dbname = " . dbDB . " user = " . dbUSERNAME . " password = " . dbPASSWORD);
+					$result = pg_Exec("SELECT orderid FROM igpOrder WHERE done = false");
+					for($i = 0; $i < pg_NumRows($result); $i++) {
+						$orderid = pg_Result($result, $i, 0);
+						pg_Exec("DELETE FROM igpOrderPizza WHERE orderid = $orderid");
+					}
+					pg_Exec("DELETE FROM igpOrder WHERE igpOrder.done = false");
+					
+				
+				?>
+				
+				
+				<SMALL>Det här kommandot har nu raderat en stor del av databasen!</SMALL>
+	
+			<? }
+		
+		?>
+	
+	</BODY>
+</HTML>

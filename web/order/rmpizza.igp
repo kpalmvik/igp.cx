@@ -1,0 +1,93 @@
+<?
+
+	require("../script/const.igp");
+	require("../script/time.igp");
+	require("../script/lang.igp");
+	JustValidSIDs($profileid, $orderid, $sid, "sid500.igp?lang=$lang&cur=$cur");
+	
+	if($action == "remove") {
+		$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+		if($favorite != "true") {
+			$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+			if($pizza > 0)
+				pg_Exec("DELETE FROM igpOrderPizza WHERE pizzaid = ($pizza - 1) AND orderid = $orderid");
+			else {
+				pg_Exec("DELETE FROM igpOrderPizza WHERE pizzaid = $pizza AND orderid = $orderid");
+				pg_Exec("DELETE FROM igpOrderPizzaNames WHERE pizzaid = $pizza AND orderid = $orderid");
+			}
+			Header("Location: main.igp?profileid=$profileid&orderid=$orderid&sid=$sid&update=true&lang=$lang&cur=$cur");
+		} else {
+			pg_Exec("UPDATE igpOrderPizza SET count = 0 WHERE orderid = $orderid AND pizzaid = $pizza");
+		}
+		Header("Location: main.igp?lang=$lang&profileid=$profileid&orderid=$orderid&sid=$sid&update=true&cur=$cur");
+		exit();
+	}
+
+?>
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">		
+		<TITLE><? lang($lang, 10114000); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10114001); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10114002); ?>
+		<P>
+		<CENTER>
+			<TABLE BORDER=0 ALIGN="center">
+				<TR>
+					<TD><FORM ACTION="rmpizza.igp" METHOD="post">
+							<INPUT TYPE="hidden" NAME="favorite" VALUE="<? echo $favorite ?>">
+							<INPUT TYPE="hidden" NAME="action" VALUE="remove">		
+							<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">		
+							<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">		
+							<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">		
+							<INPUT TYPE="hidden" NAME="pizza" VALUE="<? echo $pizza ?>">		
+							<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">		
+							<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur ?>">		
+							<INPUT TYPE="submit" VALUE=" <? lang($lang, 10114003); ?> ">
+						</FORM></TD>
+					<TD>&nbsp;&nbsp;</TD>
+					<TD><FORM ACTION="main.igp" METHOD="post">
+							<INPUT TYPE="hidden" NAME="update" VALUE="true">		
+							<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">		
+							<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">		
+							<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">		
+							<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">		
+							<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur ?>">		
+							<INPUT TYPE="submit" VALUE=" <? lang($lang, 10114004); ?> ">
+						</FORM></TD>
+				</TR>
+			</TABLE>
+		</CENTER>
+		</DIV>
+		</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>

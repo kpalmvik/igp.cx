@@ -1,0 +1,145 @@
+<?
+
+	function EchoPizzas() { // Visar de färdiga pizzorna
+		global $sid, $lang, $orderid, $profileid, $cur;
+	
+		$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+		$result = pg_Exec("SELECT pizzaname, price FROM igppizzas"); // Hämta all info om pizzor och priser
+		$curRes = pg_Exec("SELECT name, value FROM igpCurrency WHERE currency = '$cur'");
+		$curName = pg_Result($curRes, 0, 0);
+		$curValue = pg_Result($curRes, 0, 1);
+		
+		?>
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">		
+		<STYLE>
+		<!--Hemmadefinierade stylesheets, behövs för pizzafärgerna-->
+		<!--
+		.pizza {
+			color: #E0E0E0;
+		}
+		-->
+		</STYLE>
+
+		<TITLE><? lang($lang, 10112000); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10112001); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10112002); ?><BR>
+		&nbsp;&nbsp;&nbsp;<? lang($lang, 10112003); ?>
+		<P><? lang($lang, 10112004); ?> <? echo $curName . " (" . $cur . ")"; ?>
+		<BR>
+		<HR SIZE=1 NOSHADE>
+		<FORM ACTION="addpizza.igp" METHOD="post">
+		<INPUT TYPE="submit" VALUE=" Nästa &gt;&gt;&gt; "><P>
+		<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+		<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+		<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+		<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+		<INPUT TYPE="hidden" NAME="function" VALUE="2">
+		<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur; ?>">
+		<TABLE BORDER=0 WIDTH="600">
+			<TR>
+				
+		<?
+		
+		
+		$isChecked = " CHECKED "; // Sätter den första pizzan som standard
+		for($j = 0; $j < 2; $j++){
+			echo "\n\n<TD VALIGN=top WIDTH=290>\n";
+			for($x = $j *  ceil(pg_NumRows($result) / 2); $x < floor((pg_NumRows($result) / 2) * ($j + 1)); $x++) {
+				$pizzas[$x] = pg_Result($result, $x, "pizzaname");
+				$prices[$x] = intval(pg_Result($result, $x, "price") / $curValue);
+
+//Counter i HTML
+echo "<!--Pizza nr ". ($x+1) . "-->";
+				echo "\n\t<LABEL FOR=\"opt$x\" TITLE=\"$pizzas[$x] - $prices[$x]\">";
+				echo "\n\t\t<FONT FACE=\"arial,helvetica\" SIZE=\"3\" CLASS=\"pizza\">\n\t\t<INPUT TYPE=\"radio\" NAME=\"pizza\" VALUE=\"$x\"" . $isChecked . "ID=\"opt$x\">";
+				echo "\n\t\t&nbsp;";
+
+				echo "\n\t\t<B>" . ($x + 1) . ": " . $pizzas[$x] . " - " . $prices[$x] .  "</B>\n\t</FONT><BR>\n";
+				$isChecked = " ";
+				// läser in alla ingredienser för den aktuella pizzan
+				$ingres = pg_Exec($db, "SELECT igpingredients.ingredientname FROM igpPizzas, igpIngredients, igpPizzaIngredients WHERE igppizzaingredients.ingredientid = igpingredients.id AND igppizzaingredients.pizzaid = " . ($x + 1) . " AND igppizzaingredients.pizzaid = igppizzas.id");
+		
+				echo "\n\t<SMALL><FONT FACE=\"arial,helvetica\" SIZE=2>\n\t\t";
+				for($i = 0; $i < pg_NumRows($ingres); $i++) { //loopar och skriver ut ingredienserna
+					echo pg_Result($ingres, $i, "ingredientname");
+					
+					if(($i + 1) != pg_NumRows($ingres)){
+						echo ", ";
+					}	
+				}
+				echo "\n\t</FONT></SMALL></LABEL>\n<P>\n";
+			}
+			echo "</TD><TD WIDTH=10>&nbsp;&nbsp;&nbsp;</TD>\n\n";
+		}
+	?>		
+			</TR>
+		</TABLE>
+		<BR><BR>
+		<INPUT TYPE="submit" VALUE="  <? lang($lang, 10112005); ?> &nbsp;&gt;&gt;&gt;  ">
+		</DIV>
+		</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>
+	<?
+		exit();
+	}
+
+	function SavePizzas() {
+		global $orderid, $pizza, $number, $sid, $profileid, $lang, $cur;
+		$number = intval($number);
+		if(!$number) $number = 1;
+		if($number < 1) { 
+			Header("Location: main.igp?profileid=$profileid&orderid=$orderid&sid=$sid&update=true&lang=$lang&cur=$cur");
+			exit();
+		}
+		$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+
+		$result = pg_Exec("SELECT count FROM igpOrderPizza WHERE pizzaid = $pizza AND orderid = $orderid");
+		if(pg_NumRows($result)) {
+			$count = pg_Result($result, 0, "count");
+			if($count < 99) {
+				if(($count + $number) > 99)
+					$number = 99 - $count;
+			} else $number = 0; 
+			pg_Exec("UPDATE igpOrderPizza SET count=($count + $number) WHERE orderid = $orderid AND pizzaid = $pizza");
+		} else {
+			if($number > 99) $number = 99;
+			pg_Exec($db, "INSERT INTO igpOrderPizza(orderid, pizzaid, count) VALUES($orderid, $pizza, $number)");
+		}
+
+		Header("Location: main.igp?profileid=$profileid&orderid=$orderid&sid=$sid&update=true&lang=$lang&cur=$cur");
+		exit();
+	}
+
+?>

@@ -1,0 +1,67 @@
+<?
+	require("../script/const.igp");
+	require("../script/time.igp");
+	require("../script/lang.igp");
+	require("pizzafunctions.igp");
+	require("ownpizzafunctions.igp");
+	
+	$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+	$subtraction = 1;
+
+	if($favorite) $subtraction = 0;
+	$result = pg_Exec("SELECT count FROM igpOrderPizza WHERE orderid = $orderid AND pizzaid = ($pizza - $subtraction)");
+	if(pg_NumRows($result))
+		$count = pg_Result($result, 0, 0);
+?>
+
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">		
+		<TITLE><? lang($lang, 10109000); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10109001); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10109002); ?><BR>
+		<FORM ACTION="addpizza.igp" METHOD="post">
+				<INPUT TYPE="hidden" NAME="function" VALUE=<? if($function) echo $function; else echo 3;  ?>>
+				<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+				<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+				<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+				<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+				<INPUT TYPE="hidden" NAME="pizza" VALUE="<? echo $pizza; ?>">
+				<INPUT TYPE="hidden" NAME="favorite" VALUE="<? echo $favorite; ?>">
+				Antal:&nbsp;&nbsp;<INPUT TYPE="text" NAME="number" VALUE=<? if($count) echo $count; else echo "1"; ?> SIZE=3 MAXLENGTH=2>
+				<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur; ?>">
+				<INPUT TYPE="submit" VALUE="  <? lang($lang, 10109003); ?> &gt;&gt;&gt; ">
+			</FORM>
+		</DIV>
+		</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>

@@ -1,0 +1,257 @@
+<?
+
+	require("../script/common.igp");
+
+// Sparar användarnamn
+function SaveUsername() {
+	global $profileid, $username, $db, $lang;
+	
+	if($profileid != "w") { // Användaren kör med profiler
+		// Om användarnamnet inte är ifyllt
+		if($username == "") {
+		?>
+		<HTML>
+		<HEAD>
+			<TITLE>IGP - Användarnamn</TITLE>
+			<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">	
+		</HEAD>
+		<? include("../header_sub.igp"); ?>
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<H1>Inget användarnamn</H1>
+			<DIV CLASS="txt">
+			Du verkar ha glömt att fylla i ditt användarnamn. För att bli medlem i ClubIGP måste du ha ett användarnamn när du ska logga in. Skriv in det användarnamn du vill använda i rutan nedanför och klicka på &quot;Nästa&quot;
+			</DIV>
+			<FORM ACTION="wizard.igp" METHOD="post">	
+				<INPUT TYPE="hidden" NAME="step" VALUE="2">
+				<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt">Användarnamn:</FONT><BR><INPUT TYPE="text" NAME="username" VALUE="" MAXLENGTH=50>&nbsp;&nbsp;<INPUT TYPE="submit" VALUE="Nästa &gt;&gt;&gt;">
+			</FORM>
+			</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY>
+</HTML>		
+		<?
+		exit();	//Avbryt, så vi inte fortsätter nedåt...
+		}
+		$username = strip_tags($username);
+		$username = StrToLower($username);
+		
+		// Finns användaren redan?
+		$result = pg_Exec($db, "SELECT username FROM igpProfiles WHERE username='" . $username . "';");
+		// Om det finns en sådan användare...
+		if(pg_NumRows($result))
+		{ ?>
+		<HTML>
+		<HEAD>
+			<TITLE>IGP - Användarnamn</TITLE>
+			<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">	
+		</HEAD>
+		<? include("../header_sub.igp"); ?>
+
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<H1>Användarnamnet finns redan</H1>
+			<DIV CLASS="txt">
+			Tyvärr är användarnamnet <B><? echo $username ?></B> redan upptaget. Du måste välja ett annat användarnamn, som du skriver in i rutan nedanför.
+			</DIV>
+			<FORM ACTION="wizard.igp" METHOD="post">	
+				<INPUT TYPE="hidden" NAME="step" VALUE="2">
+				<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt">Användarnamn:</FONT><BR><INPUT TYPE="text" NAME="username" VALUE="" MAXLENGTH=50>&nbsp;&nbsp;<INPUT TYPE="submit" VALUE="Nästa &gt;&gt;&gt;">
+			</FORM>
+			</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY>
+</HTML>		
+
+		
+		<?
+		exit();
+		} else {
+			// Spara användaren i databasen
+			$result = pg_Exec($db, "SELECT profileid FROM igpProfiles");
+			$profileid = pg_NumRows($result) + 1;
+			pg_Exec("INSERT INTO igpProfiles(profileid, username) VALUES($profileid, '$username')");
+		}
+	}
+	return $profileid;
+}
+
+function SaveName() {
+	global $profileid, $firstname, $lastname, $orderid, $lang;
+	if(!$firstname) $firstname = "-";
+	if(!$lastname) $lastname = "-";
+	
+	$lastname = strip_tags($lastname);
+	$firstname = strip_tags($firstname);
+	
+	if($profileid != "w") // Om profil används
+		pg_Exec("UPDATE igpProfiles SET firstname='$firstname', lastname='$lastname' WHERE profileid=$profileid");
+	else { // Ingen profil
+		$result = pg_Exec("SELECT orderid FROM igpOrder ORDER BY orderid DESC"); // Hämta för att räkna ut antalet rader
+		$orderid = pg_Result($result, 0, 0) + 1; // Räkna ut orderid:et
+		pg_Exec("INSERT INTO igpOrder(orderid, firstname, lastname, time, lang) VALUES($orderid, '$firstname', '$lastname', " . time() . ", '$lang')");
+	}
+	return $orderid;
+}
+
+function SavePlanet() {
+	global $profileid, $planet, $orderid;
+	if($profileid != "w") // Vid användning av profil
+		pg_Exec("UPDATE igpProfiles SET planet=$planet WHERE profileid=$profileid");
+	else // Ingen profil
+		pg_Exec("UPDATE igpOrder SET planet=$planet WHERE orderid=$orderid");
+}
+
+function SavePersonData() {
+	global $profileid, $address, $postcode, $phonenumber, $homesite, $email, $cur, $orderid, $lang;
+	
+	if(!$address) $address = "-";
+	if(!$postcode) $postcode = "-";
+	if(!$phonenumber) $phonenumber = "-";
+	if(!$homesite) $homesite = "-";
+	if(!$email) $email = "-";
+	
+	// Ta bort alla tag-tecken ifall det finns dumma dj¤vlar som roar sig med sådant
+	$address = strip_tags($address);
+	$postcode = strip_tags($postcode);
+	$phonenumber = strip_tags($phonenumber);
+	$homesite = strip_tags($homesite);
+	$email = strip_tags($email);
+	if($profileid != "w") // Använder profil
+		pg_Exec("UPDATE igpProfiles SET address='$address', postcode='$postcode', phonenumber='$phonenumber', homesite='$homesite', email='$email', currency='$cur' WHERE profileid=$profileid");
+	else { // Använder ingen profil
+		pg_Exec("UPDATE igpOrder SET address='$address', postcode='$postcode', phonenumber='$phonenumber', homesite='$homesite', email='$email', currency='$cur' WHERE orderid=$orderid");
+	
+		// lång och jobbig header. puh();
+		Header("Location: ../order/main.igp?uid=8798432wiuiWyufds" . time() / 23 . "&sid=" . encodeTime($orderid, $profileid) . "&lang=" . $lang . "&profileid=w&orderid=$orderid&invert=1&virtual-host=limit");
+		exit();
+	}
+}
+
+function SetPassword() {
+	global $password, $repassword, $profileid, $lang;
+	if($password != $repassword){
+	?>
+		<HTML>
+		<HEAD>
+			<TITLE>IGP - Lösenord</TITLE>
+			<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">	
+		</HEAD>
+		<? include("../header_sub.igp"); ?>
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<H1>Lösenordsfel</H1>
+			<DIV CLASS="txt">
+			Du skrev inte in samma lösenord i båda fälten. Prova igen.
+			</DIV>
+			<FORM ACTION="wizard.igp" METHOD="post">
+				<INPUT TYPE="hidden" NAME="step" VALUE="6">
+				<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">
+				<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+				<TABLE BORDER=0>
+					<TR>
+						<TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt">Skriv in ditt lösenord:</FONT><BR>
+							<INPUT TYPE="password" NAME="password" MAXLENGTH=50>
+						</TD>
+						<TD>&nbsp;</TD>
+						<TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt">Skriv in samma lösenord igen:</FONT><BR>
+							<INPUT TYPE="password" NAME="repassword" MAXLENGTH=50>
+						</TD>
+					</TR>
+				</TABLE>
+				<BR>
+				&nbsp;<INPUT TYPE="submit" VALUE="Nästa &gt;&gt;&gt;">
+			</FORM>
+			</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY>
+</HTML>								
+	<?
+		exit;
+	}
+	pg_Exec("UPDATE igpProfiles SET password='$password' WHERE profileid=$profileid");
+	
+	// Plocka ut förnamnet, ska användas nedan
+	$result = pg_Exec("SELECT firstname FROM igpProfiles WHERE profileid=$profileid");
+	// firstname
+	$names[0] = pg_Result($result, 0, 0);
+	
+	// Plocka ut användarnamn och lösenord, behövs när vi ska logga in...
+	$result = pg_Exec("SELECT password, username FROM igpProfiles WHERE profileid=$profileid");
+	// password
+	$names[1] = pg_Result($result, 0, 0);
+	// username
+	$names[2] = pg_Result($result, 0, 1);
+	
+	return $names;
+}
+
+?>

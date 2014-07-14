@@ -1,0 +1,241 @@
+<?
+	require("../script/const.igp");
+	require("../script/time.igp");
+	require("../script/lang.igp");
+	require("../script/common.igp");
+	JustValidSIDs($profileid, $orderid, $sid, "../order/sid500.igp?lang=$lang");
+
+	// Den här sidan skall definitivt aldrig cachas! Förhindra det!
+	  header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");             // Date in the past
+	  header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); // always modified
+	  header("Cache-Control: no-cache, must-revalidate");           // HTTP/1.1
+	  header("Pragma: no-cache");                                   // HTTP/1.0	
+?>
+<HTML>
+<HEAD>
+	<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">
+<STYLE>
+<!--Vi måste definiera lite fina stylesheets för den här sidan, eftersom bakgrunden är vit...-->
+<!--
+H3 {
+	color: #DD9900;
+}
+H1 {
+	color: #000000;
+}
+A {
+	color: #000000;
+}
+A:hover {
+	color: #000000;
+}
+-->
+</STYLE>
+	<TITLE><? lang($lang, 10103000); ?></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#000000" VLINK="#000000" ALINK="#000000">
+<?
+				require("../script/const.igp");
+				require("payfunctions.igp");
+				
+				$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD); //Öppna databasen som vanligt...
+
+				//Sätt variabeln true på orden, dvs att ordern är avslutad.
+				pg_Exec("UPDATE igpOrder SET done=true WHERE orderid='$orderid'");
+				
+				if($profileid == "w") { //om användaren är en icke-medlem, dvs har användardata i ordertabellen			
+
+					// Fråga om lite personliga uppgifter från ordertabellen
+					$result = pg_Exec("SELECT firstname, lastname, planet, address, postcode, phonenumber, currency, email, homesite FROM igpOrder WHERE orderid='$orderid'");
+					$currency = pg_Result($result, 0, "currency");
+				}
+				else { //om nu användaren är medlem finns hans info i igpProfiles istället
+
+					//Eftersom valutan alltid lagras i ordern, så gör vi så här...
+					$result = pg_Exec("SELECT currency FROM igpOrder WHERE orderid='$orderid'");
+					$currency = pg_Result($result, 0, 0);
+					
+					// Gör den vanliga frågan, fast till profildatabasen.
+					$result = pg_Exec("SELECT firstname, lastname, planet, address, postcode, phonenumber, email, homesite FROM igpProfiles WHERE profileid='$profileid'");
+ 				}
+				
+				// Gör en bunt med överflyttningar från resultat till variabler
+				$firstname = pg_Result($result, 0, "firstname");
+				$lastname = pg_Result($result, 0, "lastname");
+				$planet = pg_Result($result, 0, "planet");
+				$address = pg_Result($result, 0, "address");
+ 				$postcode = pg_Result($result, 0, "postcode");
+ 				$phonenumber = pg_Result($result, 0, "phonenumber");		
+				$email = pg_Result($result, 0, "email");
+				$homesite = pg_Result($result, 0, "homesite");
+ 				
+
+
+			$result = pg_Exec("SELECT value, name from igpCurrency WHERE currency='$currency'");
+			$curMulti = pg_Result($result, 0, "value"); // tal som du ska dela databaspriset med för att få lokal valuta
+			$curName = pg_Result($result, 0, "name"); // Valutans riktiga namn
+			
+			/*
+			Dags att räkna med tiden lite. Vi ska först ha aktuell tid och datum och sånt.
+			Det ska läggas ihop till en sträng i ett passande lokalt datumformat.
+			Den läggs i $curDateTime.
+			Vi ska också ha en ny tid, leveranstiden, som diffar ungefär +1h(+-30min)
+			Den placeras i $deliveryTime.
+			*/
+
+			//Vi måste fixa lite med datumformatet
+			
+			// Sätt det lokala datumformatet enligt UNIX-standard, leta upp rätt inställning
+			// i språkdatabasen
+			setlocale ("LC_TIME", return_lang($lang, 11));
+					
+			srand((double)microtime()*1000000); // Initiera slumptalen
+
+			// Skaffa ett slumptal inom rangen 1200-2700
+			// Det motsvarar 20 minuter resp. 45 minuter i unix-timestamp format. vi använder det nedan
+			$randval = rand(1200, 2700); 
+
+			//Öka tiden med det och omvandla till vanlig tid. %H.%M ger bara tiden
+			$deliveryTime = strftime("%H:%M", time() + $randval);
+			
+?>
+&nbsp;<BR>
+<CENTER>
+<!--Sidhuvud, med logga in orderinfo-->
+	<TABLE WIDTH=90% CELLSPACING=0 CELLPADDING=3 BORDER=0>
+		<TR>
+			<TD VALIGN="top" ALIGN="left" WIDTH=75%>
+				<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=40 VSPACE=0>
+				<IMG SRC="../images/logo_small.gif" WIDTH=400 HEIGHT=53 HSPACE=0 VSPACE=0 ALIGN="center" ALT="Intergalactic Pizza">
+				<BR CLEAR="all"><BR>&nbsp;<BR>
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt">
+					<CENTER>
+						<H1><? lang($lang, 10103001); ?></H1>
+					</CENTER>
+					<? lang($lang, 10103002); ?><? echo $curName ?> (<? echo $currency ?>). <? lang($lang, 10103003); ?><BR>
+					&nbsp;&nbsp;&nbsp;<? lang($lang, 10103004); ?> <? echo $deliveryTime ?>. <? lang($lang, 10103005); ?>
+				</FONT>
+			</TD>
+			<TD WIDTH=5%>&nbsp;</TD>
+			<TD ALIGN="left" VALIGN="top" WIDTH=20%>
+				<FONT FACE="arial,helvetica" SIZE=2>
+				<H3 CLASS="ful"><? lang($lang, 10103006); ?></H3>
+				<DIV CLASS="txt">				
+					<B><? lang($lang, 10103007); ?></B>&nbsp;igp<? echo $randval . $orderid . "\\" . intval($randval / 3) ?><BR>
+					<B><? lang($lang, 10103008); ?></B>&nbsp;&nbsp;<? echo strftime("%x", time()) ?><BR>
+					<B><? lang($lang, 10103009); ?></B>&nbsp;&nbsp;<? echo strftime("%X", time()) ?>
+					<BR><BR>
+				</DIV>
+				<H3><? lang($lang, 10103010); ?></H3>
+				<DIV CLASS="txt">
+					<B><? echo $firstname . " " . $lastname ?></B><BR>
+					<? echo $address . "<BR>" . $postcode?><BR>
+					<? lang($lang, $planet); /* Använd det faktum att planetnamnet finns beskrivet i lang-tabellen*/ ?>
+					<BR><BR>
+					<? echo $email ?><BR>
+					<? echo $phonenumber ?><BR>
+					<? if($homesite!="http://") echo $homesite ?><BR>
+				</DIV>
+				</FONT>
+			</TD>
+		</TR>
+	</TABLE>
+	<BR CLEAR="all">
+	<TABLE WIDTH=80% BORDER=0 CELLSPACING=0 CELLPADDING=3>
+		<TR>
+			<TD VALIGN="top" BGCOLOR="#E0E0E0"><IMG SRC="../images/nothing.gif" WIDTH=10 HEIGHT=10 BORDER=0 HSPACE=0 VSPACE=3 ALT=""></TD>
+			<TD WIDTH=70% BGCOLOR="#E0E0E0" ALIGN="left"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? lang($lang, 10103011); ?></FONT></TD>
+			<TD WIDTH=10% BGCOLOR="#E0E0E0" ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? lang($lang, 10103012); ?></FONT></TD>
+			<TD WIDTH=10% BGCOLOR="#E0E0E0" ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><? lang($lang, 10103013); ?></FONT></TD>
+			<TD WIDTH=10%><!--Den här syns inte alls-->&nbsp;</TD>
+		</TR>
+		<? echoOrderList(); ?>
+		
+		<?
+		// Ge gratis sallad till profiler
+		if($profileid != "w") {?>
+		<TR>
+			<TD VALIGN="top"><IMG SRC="../images/pizico_sallad.gif" WIDTH=10 HEIGHT=10 HSPACE=0 VSPACE=5 BORDER=0 HSPACE=0 VSPACE=3 ALT="Gratis sallad"></TD>
+			<TD ALIGN="left"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><I><? lang($lang, 10103014); ?></I></FONT></TD>
+			<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? echo $sumPizzas ?></B></FONT></TD>
+			<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B>0</B></FONT></TD>
+			<TD>&nbsp;</TD>
+		</TR>		
+		<? } ?>
+		<TR>
+			<TD VALIGN="top"><IMG SRC="../images/pizico_sum.gif" WIDTH=10 HEIGHT=10 HSPACE=0 VSPACE=5 BORDER=0 HSPACE=0 VSPACE=3 ALT="Summa"></TD>
+			<TD ALIGN="left"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? lang($lang, 10103015); ?></B></FONT></TD>
+			<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? echo $sumPizzas ?></B></FONT></TD>
+			<TD ALIGN="right"><FONT FACE="arial,helvetica" SIZE=3 CLASS="txt"><B><? echo $sumMoney ?></B></FONT></TD>
+			<TD>&nbsp;</TD>
+		</TR>			
+	</TABLE><BR>
+	<TABLE WIDTH=80% BORDER=0 CELLSPACING=0 CELLPADDING=3>
+		<TR>
+			<TD><IMG IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=5 VSPACE=5 BORDER=0 ALT=""></TD>
+			<TD WIDTH=90% ALIGN="right">	
+				<FONT FACE="arial,helvetica" COLOR="#FF0000" SIZE=4>
+					<H3 STYLE="color:#FF0000;"><? lang($lang, 10103016); ?> &nbsp;&nbsp;&nbsp;<? echo $sumMoney . " " . $currency ?>
+						<? 
+						// nu är det så att spacedollarn och usdollarn är samma sak, därför ska vi kolla lite
+						if ($curMulti != 1) 
+							echo " (" . intval($sumMoney * $curMulti) . " S$) "
+						 ?> 
+						 </H3>
+				</FONT>
+			</TD>
+			<TD WIDTH=10%>&nbsp;</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<BR>&nbsp;<BR>&nbsp;<BR>
+<BR CLEAR="all">
+	<TABLE WIDTH=40% ALIGN="right" CELLSPACING=0 CELLPADDING=0 BORDER="0">
+		<TR>
+			<TD>
+			<FONT FACE="arial">
+
+			</FONT>
+			</TD>
+			<TD WIDTH=10%>&nbsp;</TD>
+		</TR>
+	</TABLE>
+<BR CLEAR="all">
+<CENTER>
+	<TABLE WIDTH=80% BORDER=0>
+		<TR>
+			<TD WIDTH=45% VALIGN="top"><HR SIZE=1 NOSHADE><FONT FACE="arial,helvetica" CLASS="txt"><I><? echo $firstname . " " . $lastname ?></I></FONT></TD>
+			<TD WIDTH=10% VALIGN="top">&nbsp;</TD>
+			<TD WIDTH=45% VALIGN="top"><HR SIZE=1 NOSHADE><FONT FACE="arial,helvetica" CLASS="txt"><I><? lang($lang, 10103017); ?></I></FONT></TD>
+		</TR>
+	</TABLE>
+<BR><BR>&nbsp;
+<BR><BR>
+<HR SIZE=1 NOSHADE>
+<CENTER>
+	<TABLE WIDTH=50% ALIGN="center" BORDER=0
+		<TR>
+			<TD VALIGN="top" ALIGN="left">
+			<FONT FACE="arial,helvetica" SIZE=3 CLASS="txt">
+				<? lang($lang, 10103018); ?>
+				<FORM ACTION="done.igp" METHOD="post">
+					<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">
+					<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">
+					<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">
+					<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang ?>">
+					<CENTER>
+						<INPUT TYPE="submit" VALUE=" Slutför " ALIGN="center">
+					</CENTER>
+				</FORM>
+			</FONT>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<HR SIZE=1 NOSHADE>
+<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+	&copy; 2000 Intergalactic Pizza Corporation. All rights reserved.
+</FONT>
+</CENTER>
+</BODY>
+</HTML>

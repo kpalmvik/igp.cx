@@ -1,0 +1,20 @@
+<?
+
+	require("../script/const.igp");
+	require("../script/time.igp");
+	require("../script/lang.igp");
+	require("ownpizzafunctions.igp");
+	
+	JustValidSIDs($profileid, $orderid, $sid, "sid500.igp?lang=$lang");
+	
+	if($step == 2) {
+		SaveIngredients();
+		exit();
+	}
+		
+	if($step == 3) {
+		SavePizzaData();
+		Header("Location: main.igp?lang=$lang&profileid=$profileid&orderid=$orderid&sid=$sid&update=true&cur=$cur");
+	}
+
+?>

@@ -1,0 +1,279 @@
+<?   
+
+	require("../script/const.igp");
+	require("../script/lang.igp");
+	require("../script/time.igp");
+	require("../script/common.igp");
+
+	JustValidSIDs($profileid, $orderid, $sid, "../order/sid500.igp?lang=$lang");
+	
+
+	$db = pg_Connect("dbname = " . dbDB . " user = " . dbUSERNAME . " password = " . dbPASSWORD);
+
+	if($profileid != "w")
+		$result = pg_Exec("SELECT firstname, lastname, planet, address, postcode, phonenumber, email, homesite, email, currency, password FROM igpProfiles WHERE profileid = $profileid");
+	else
+		$result = pg_Exec("SELECT firstname, lastname, planet, address, postcode, phonenumber, email, homesite, email, currency FROM igpOrder WHERE orderid = $orderid");
+	$info = pg_Fetch_Array($result, 0);
+	
+	if(!$function) {
+		?>
+	<HTML>
+		<HEAD>
+			<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">			
+			<TITLE><? lang($lang, 10107000); ?></TITLE>
+		</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10107001); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10107002); ?>
+		<FORM ACTION="changepersonalinformation.igp" METHOD="post">				
+		<? if($byorder == "true") {?>
+			<INPUT TYPE="hidden" NAME="byorder" VALUE="true">
+			<INPUT TYPE="hidden" NAME="pass1" VALUE="a">
+			<INPUT TYPE="hidden" NAME="pass2" VALUE="a">
+			<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur ?>">
+		<? } ?>	
+			<INPUT TYPE="hidden" NAME="function" VALUE="1">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+			<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur; ?>">
+			<TABLE BORDER=0>
+				<TR>
+					<TD COLSPAN=2>
+						<FONT FACE="arial,helvetica" COLOR="#FFC000">
+						<H2><? lang($lang, 10107003); ?></H2>
+						</FONT>
+					</TD>
+				</TR>
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107004); ?></FONT></TD><TD><INPUT TYPE="text" NAME="firstname" VALUE="<? echo $info["firstname"]; ?>" MAXLENGTH=50></TD></TR>
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107005); ?></FONT></TD><TD><INPUT TYPE="text" NAME="lastname" VALUE="<? echo $info["lastname"]; ?>" MAXLENGTH=50></TD></TR>
+				<TR>
+					<TD COLSPAN=2><BR>
+						<FONT FACE="arial,helvetica" COLOR="#FFC000">
+						<H2><? lang($lang, 10107006); ?></H2>
+						</FONT>
+					</TD>
+				</TR>					
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107007); ?></FONT></TD><TD><INPUT TYPE="text" NAME="address" VALUE="<? echo $info["address"]; ?>" MAXLENGTH=50></TD></TR>
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107008); ?></FONT></TD><TD><INPUT TYPE="text" NAME="postcode" VALUE="<? echo $info["postcode"]; ?>" MAXLENGTH=56></TD></TR>
+				<TR>
+					<TD COLSPAN=2><BR>
+						<FONT FACE="arial,helvetica" COLOR="#FFC000">
+						<H2><? lang($lang, 10107009); ?></H2>
+						</FONT>
+					</TD>
+				</TR>					
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107010); ?></FONT></TD>
+						<TD>
+							<SELECT NAME="planet">
+							<?
+							
+								for($i = 1; $i <= 9; $i++) {
+									if($i == $info["planet"])
+										echo "<OPTION VALUE=$i SELECTED>" . return_lang($lang, $i);
+									else
+										echo "<OPTION VALUE=$i>" . return_lang($lang, $i);
+								}
+							?>
+							</SELECT>
+						</TD>
+					</TR>
+				<TR>
+					<TD COLSPAN=2><BR>
+						<FONT FACE="arial,helvetica" COLOR="#FFC000">
+						<H2><? lang($lang, 10107011); ?></H2>
+						</FONT>
+					</TD>
+				</TR>					
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107012); ?></FONT></TD><TD><INPUT TYPE="text" NAME="phonenumber" VALUE="<? echo $info["phonenumber"]; ?>" MAXLENGTH=30></TD></TR>
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107013); ?></FONT></TD><TD><INPUT TYPE="text" NAME="email" VALUE="<? echo $info["email"]; ?>" MAXLENGTH=255></TD></TR>
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107014); ?></FONT></TD><TD><INPUT TYPE="text" NAME="homesite" VALUE="<? echo $info["homesite"]; ?>" MAXLENGTH=255></TD></TR>
+<? //Avbrytning om det är ändring från orderbekräftelsen
+	if($byorder == "true"){?>
+					</TD>
+				</TR>
+			</TABLE>
+			<INPUT TYPE="submit" VALUE=" <? lang($lang, 10107015); ?> ">
+			</FORM>
+				</TR>
+				<TR>
+					<TD COLSPAN=2 ALIGN="center">
+					<BR>	
+			<!--Copyright-->
+						<HR SIZE=1 NOSHADE>
+						<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+							Copyright &copy; 2000 Intergalactic Pizza Corporation
+						</FONT>
+					</TD>
+				</TR>		
+			</TABLE>
+			</BODY></HTML>	
+<?
+		exit();
+	}
+?>
+				<TR>
+					<TD COLSPAN=2>
+						<FONT FACE="arial,helvetica" COLOR="#FFC000">
+						<H2><? lang($lang, 10107016); ?></H2>
+						</FONT>
+					</TD>
+				</TR>					
+					<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107017); ?></FONT></TD>
+						<TD>
+							<SELECT NAME="cur">
+							<?
+							$result = pg_Exec("SELECT currency, name FROM igpCurrency WHERE currency='IGP' OR currency = 'SEK' OR currency = 'USD' OR currency = 'GBP' OR currency = 'DKK' OR currency = 'EUR' OR currency = 'FIM' OR currency = 'FRF' OR currency = 'DEM' OR currency = 'ISK' OR currency = 'JPY' OR currency = 'NOK' ORDER BY name");
+							for($i = 0; $i < pg_NumRows($result); $i++) {
+								$res_curShort = pg_Result($result, $i, "currency");
+								$res_curName = pg_Result($result, $i, "name");
+								if($res_curShort == $info["currency"])
+									echo "<OPTION VALUE=\"$res_curShort\" SELECTED>$res_curName ($res_curShort)</OPTION>";
+								else
+									echo "<OPTION VALUE=\"$res_curShort\">$res_curName ($res_curShort)</OPTION>";
+							}
+							?>
+							</SELECT>
+						</TD>
+					</TR>
+					<? if($profileid != "w"): ?>
+				<TR>
+					<TD COLSPAN=2><BR>
+						<FONT FACE="arial,helvetica" COLOR="#FFC000">
+						<H2><? lang($lang, 10107018); ?></H2>
+						</FONT>
+						<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt">
+						<? lang($lang, 10107019); ?>
+						</FONT>
+					</TD>
+				</TR>										
+						<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107020); ?></FONT></TD><TD><INPUT TYPE="password" NAME="pass1" VALUE="<? echo $info["password"]; ?>" MAXLENGTH=50></TD></TR>
+						<TR><TD><FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><? lang($lang, 10107021); ?></FONT></TD><TD><INPUT TYPE="password" NAME="pass2" VALUE="<? echo $info["password"]; ?>" MAXLENGTH=50></TD></TR>
+					<? endif; ?>
+			</TABLE><BR>
+			<INPUT TYPE="submit" VALUE=" <? lang($lang, 10107022); ?> ">
+			</FORM>
+			<FORM ACTION="pizzalist.igp" METHOD="post">
+				<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+				<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+				<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+				<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+				<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur; ?>">				
+				<INPUT TYPE="submit" VALUE=" <? lang($lang, 10107023); ?> ">
+			</FORM>
+			
+		</DIV>
+		</FONT>
+			
+		<? } else { //Om nu funktion är satt, dvs vi ska spara
+		
+			if(!$firstname) $firstname = "-";
+			if(!$lastname) $lastname = "-";
+			if(!$address) $address = "-";
+			if(!$postcode) $postcode = "-";
+			if(!$phonenumber) $phonenumber = "-";
+			if(!$homesite) $homesite = "-";
+			if(!$email) $email = "-";
+			
+			// Ta bort alla tag-tecken ifall det finns dumma dj¤vlar som roar sig med sådant
+			$lastname = strip_tags($lastname);
+			$firstname = strip_tags($firstname);
+			$address = strip_tags($address);
+			$postcode = strip_tags($postcode);
+			$phonenumber = strip_tags($phonenumber);
+			$homesite = strip_tags($homesite);
+			$email = strip_tags($email);
+
+			if($profileid != "w")
+				pg_Exec("UPDATE igpProfiles SET email = '$email', firstname = '$firstname', lastname = '$lastname', address = '$address', postcode = '$postcode', phonenumber = '$phonenumber', homesite = '$homesite', planet = $planet, currency = '$cur' WHERE profileid = $profileid");
+			else
+				pg_Exec("UPDATE igpOrder SET email = '$email', firstname = '$firstname', lastname = '$lastname', address = '$address', postcode = '$postcode', phonenumber = '$phonenumber', homesite = '$homesite', planet = $planet WHERE orderid = $orderid");
+
+			pg_Exec("UPDATE igpOrder SET currency = '$cur' WHERE orderid = $orderid");
+			
+			if($profileid != "w")
+				if($pass1 != $pass2) {
+				
+				//Inträffar om de båda lösenorden inte stämmer
+					?>
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">		
+		<TITLE><? lang($lang, 10107024); ?></TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10107025); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10107026); ?>
+		<FORM ACTION="changepersonalinformation.igp" METHOD="post">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">		
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid ?>">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid ?>">
+			<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur ?>">
+			<INPUT TYPE="submit" VALUE=" <? lang($lang, 10107027); ?> ">
+		</FORM>
+		<?
+				} else { //Om lösenorden stämmer
+				if($byorder == "true") { //Om vi ska till orderbekräftelsen igen...
+					Header("Location: ../pay/confirm.igp?lang=$lang&profileid=$profileid&orderid=$orderid&sid=$sid&update=true&cur=$cur");
+					exit();
+				}				
+					pg_Exec("UPDATE igpProfiles SET password = '$pass1' WHERE profileid = $profileid");
+					Header("Location: main.igp?lang=$lang&profileid=$profileid&orderid=$orderid&sid=$sid&update=true&cur=$cur");
+					
+				}
+			else //Om man inte har profil
+				if($byorder == "true") { //Om vi ska till orderbekräftelsen igen...
+					Header("Location: ../pay/confirm.igp?lang=$lang&profileid=$profileid&orderid=$orderid&sid=$sid&cur=$cur&update=true");
+					exit();
+				}
+				Header("Location: main.igp?lang=$lang&profileid=$profileid&orderid=$orderid&sid=$sid&update=true&cur=$cur");
+		}
+		
+		?>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>

@@ -1,0 +1,46 @@
+/*
+	ERRORHANDLING CSSS
+	
+	Used for all error-messages sent
+	from server, eg 404.
+	
+*/
+
+
+/* General prefs for links in error documents */
+A {
+	color: #E0E0E0;
+}
+A:hover {
+	color: #FFC000;
+}
+	
+/* Text is used for all default text*/
+.txt {
+	font-family: arial,helvetica,sans-serif;
+	font-size: 10pt;
+}
+
+/* Use on all debuginfo */ 
+.debuginfo {
+	font-family: arial,helvetica,sans-serif;
+	font-size: 8pt;
+	color: #E0E0E0;
+}
+.debuginfo A {
+	color: #E0E0E0;
+}
+
+/* Text used for copyright information (bottom) */
+.copy {
+	font-family: arial,helvetica,sans-serif;
+	font-size: 9pt;
+	color: #A0A0A0;
+}
+
+/* header text */
+.head {
+	font-family: arial,helvetica,sans-serif;
+	font-size: 18pt;
+	color: #FFC000;
+}

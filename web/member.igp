@@ -1,0 +1,137 @@
+<?
+        require("script/const.igp"); // Våra konstanter
+        require("script/lang.igp");
+	require("script/common.igp");
+
+	// Räkna antalet träffar på den här sidan
+	counter();
+?>
+<HTML>
+<HEAD>
+        <TITLE>IGP - ClubIGP</TITLE>
+        <LINK REL="STYLESHEET" TYPE="text/css" HREF="css/default.css">
+</HEAD>
+<? include("header.igp"); ?>
+
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+        <TR>
+                <TD ALIGN="center">
+                        <IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1
+HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+						<CENTER>
+				<IMG SRC="images/logo.gif" WIDTH=400
+HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR
+CLEAR="all">
+				<FONT FACE="arial,helvetica" SIZE=1
+CLASS="quicklink">
+					<A HREF="order.igp?lang=<? echo
+$lang ?>">Beställ pizza </A> | <A HREF="igp/?lang=sv">Om IGP</A>
+| <A
+HREF="main.igp?lang=sv">Tillbaka till huvudsidan</A>
+				</FONT>
+				<BR>&nbsp;<BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+			<FONT FACE="arial,helvetica" SIZE=2
+COLOR="#FFC000">
+				<H1>Bli medlem</H1>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				<BR>
+Beställer du ofta pizza hos IGP lönar det sig att gå med i ClubIGP.
+Medlemskapet är helt gratis och det finns inga hakar. Däremot ger det dej
+många fina förmåner som till exempel:				
+				<BR>
+				</DIV>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2
+COLOR="#FFC000">
+				<H2>Spar tid</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				Som medlem i ClubIGP får du ett personligt
+användarnamn och lösenord som du använder när du vill beställa pizza. Det
+gör att du slipper gå igenom den tidsödande uppgiften att fylla i dina
+personuppgifter varje gång du vill beställa och får mer tid över.
+
+				</DIV>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2
+COLOR="#FFC000">
+				<H2>Enkelt</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				Det går mycket snabbt att bli medlem i
+ClubIGP. Du fyller bara i dina personuppgifter tillsammans med ett
+personligt användarnamn och lösenord som du själv väljer. Sedan är du klar
+att beställa din första medlems-pizza hos IGP.
+				</DIV>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2
+COLOR="#FFC000">
+				<H2>Personligt</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica" SIZE=2>
+				<DIV CLASS="txt">
+				Som medlem i ClubIGP är du inte längre en
+anonym användare, utan en personlig medlem i IGP-gemenskapen. Du hälsas
+välkommen när du loggar in och alla dina inställningar är redan gjorda.
+När du komponerat en egen pizza som du tycker om har du möjlighet att
+spara den som en favoritpizza. Nästa gång du loggar in finns pizzan enkelt
+tillgänlig, så att du lätt kan beställa den igen. Alla priser anges i din
+personliga valuta som uppdateras i realtid.
+				</DIV>
+			</FONT>
+                        <FONT FACE="arial,helvetica" SIZE=2
+COLOR="#FFC000">
+                                <H2>Hjälpligt</H2>
+                        </FONT>
+                        <FONT FACE="arial,helvetica" SIZE=2>
+                                <DIV CLASS="txt">
+                                Som medlem har du tillgång till
+dygnet-runt support från kompetent personal. Oavsett om det gäller en
+pizza som krånglar till hur man byter lösenord svarar personalen på dina
+frågor. Du når dem på <A HREF="mailto:support@igp.cx">support@igp.cx</A>.
+Glöm inte att ange ditt användarnanmn.
+                                </DIV>
+                        </FONT>      
+
+                        <FONT FACE="arial,helvetica" SIZE=2
+COLOR="#FFC000">
+                                <H2>Billigt</H2>
+                        </FONT>
+                        <FONT FACE="arial,helvetica" SIZE=2>
+                                <DIV CLASS="txt">
+                                Det är helt gratis att vara med i ClubIGP.
+Vi kräver inte att du ska beställa några pizzor, men för varje pizza du
+beställer får du en gratis medlemssallad värd ungefär S$ 1 på köpet.
+
+				<BR><BR>
+				&nbsp;&nbsp;&nbsp;Så varför vänta längre
+än nödvändigt? 
+<A HREF="profile/wizard.igp?lang=<? echo $lang ?>&step=1">Bli medlem i
+ClubIGP nu!</A>
+                                </DIV>
+                        </FONT>                         
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy"
+COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza
+Corporation
+			</FONT>
+		</TD>
+	</TR>	
+</TABLE>
+</HTML>

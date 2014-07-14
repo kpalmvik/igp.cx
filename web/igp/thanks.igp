@@ -1,0 +1,286 @@
+<?
+	require("../script/const.igp"); // V&aring;ra konstanter
+	require("../script/lang.igp");
+	require("../script/common.igp");
+
+ // R&auml;kna antalet tr&auml;ffar p&aring; den h&auml;r sidan
+ counter();
+?>
+<HTML>
+   <HEAD>
+      <TITLE>
+         IGP - Tack till
+      </TITLE>
+      <LINK rel="STYLESHEET" type="text/css" href="../css/default.css">
+   </HEAD>
+   <? include("../header_sub.igp"); ?>
+   <BODY>
+      <TABLE width="600" cellspacing="0" cellpadding="3" border="0">
+         <TR>
+            <TD align="center">
+               <IMG src="../images/nothing.gif" width="1" height="1" hspace=
+               "300" vspace="0" alt=""><BR clear="all">
+                
+               <CENTER>
+                  <IMG src="../images/logo.gif" width="400" height="69" alt=
+                  "Intergalactic Pizza." align="center" hspace="0" vspace="5">
+                  <BR clear="all">
+                  <FONT face="arial,helvetica" size="1" class="quicklink"> 
+				  	<A href="../order.igp?lang=<? echo $lang ?>">Best&auml;ll pizza</A> | <A href="../member.igp?lang=<? echo $lang ?>">Bli medlem</A> | <A href="../main.igp?lang=<? echo $lang; ?>">Tillbaka till huvudsidan</A>
+	     		  </FONT>
+               </CENTER>
+            </TD>
+         </TR>
+         <TR>
+            <TD>
+
+		<FONT face="arial,helvetica" color="#FFC000">                
+               <H1>
+                   Tack till
+               </H1>
+		</FONT>
+               
+		<FONT face="arial,helvetica" size="2"> 
+               	  <DIV class="txt">
+			Följande personer/organisationer har på ett eller annat sätt hjälpt till med att göra Intergalactic Pizza verkligt. I ingen speciell ordning:
+                  </DIV>
+               </FONT>
+                
+               <FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+		Tack Magnus och Kristofer
+               </H2>
+		</FONT>
+		<FONT face="arial,helvetica" size="2">
+               <DIV class="txt">
+		önskar <A HREF="mailto:superkri@igp.cx">Kristofer</A> och <A HREF="mailto:magnus@igp.cx">Magnus</A>
+               </DIV>
+		</FONT>
+                
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Lärare och handledare
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+	Ulf Anagrius<BR>
+	Ove Castell<BR>
+	Leif Önneflod<BR>
+               </DIV>
+		</FONT>
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Betatestare
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+	Nicklas Folkesson<BR>
+	Anders Hurtig<BR>
+	Andreas Samuelsson<BR>
+	Johan Axelsson<BR>
+	Christian Airikainen<BR>
+	Frida Carlsson<BR>
+	Christian Löfqvist<BR>
+	Erik Olofsson<BR>
+	Ingvar Engström<BR>
+               </DIV>
+		</FONT>
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Server
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+	Björn Stolt/Hulebäcksgymnasiet<BR>
+	John Holm/Hulebäcksgymnasiet<BR>
+	Nicklas Folkesson<BR>
+               </DIV>
+		</FONT>                
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Nätverksadministration
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+	Kent Nilsson/Hulebäcksgymnasiet
+               </DIV>
+		</FONT>                
+
+
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Domän
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		<A HREF="http://www.niccx.com" TARGET="_blank">nicCX</A>
+               </DIV>
+		</FONT>                
+
+
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+		DNS
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		<A HREF="http://www.granitecanyon.com" TARGET="_blank">granitecanyon.com</A>
+               </DIV>
+		</FONT>                
+
+
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Översättare
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+	Anders Hurtig<BR>
+	Nicklas Folkesson
+
+               </DIV>
+		</FONT>                
+
+
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+		Logi
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Gun-Britt och Ingvar Engström
+               </DIV>
+		</FONT>                
+
+
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Pizzor och ingredienser
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Bella Napoli, Mölnlycke centrum
+               </DIV>
+		</FONT>
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Operativsystem
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Linus Torvaldsson/Linux
+               </DIV>
+		</FONT>
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Mjukvara
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Open Source<BR>
+		PHP3<BR>
+		Apache<BR>
+		PostgreSQL
+               </DIV>
+		</FONT>
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Motiverat skolk
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Frank Paulsson, Komvux
+               </DIV>
+		</FONT>
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Testemail
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		kalle /nka.com
+               </DIV>
+		</FONT>
+
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Tass
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Gosan och Sassa Kanin
+               </DIV>
+		</FONT>
+
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Plastpåse
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Städtanterna/Hulebäcksgymnasiet
+               </DIV>
+		</FONT>
+
+		<FONT face="arial,helvetica" size="2" color="#FFC000">
+               <H2>
+                 Serverrum
+               </H2>
+		</FONT>               
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		CD-produktion/Hulebäcksgymnasiet
+               </DIV>
+		</FONT>
+		<BR><BR>
+		<FONT face="arial,helvetica" size="2"> 
+               <DIV class="txt">
+		Anser du att du också bör vara med här? Skicka ett e-mail till <A HREF="mailto:jagvilloxavame@igp.cx">jagvilloxavame@igp.cx</A> och förklara varför!
+		<BR><BR>
+		<A HREF="../main.igp?lang=<? echo $lang ?>">Tillbaka</A>
+		</DIV>
+		</FONT>
+
+            </TD>
+         </TR>
+         <TR>
+            <TD colspan="2" align="center">
+               <BR>
+                <!--Copyright--> 
+               <HR size="1" noshade>
+               <FONT face="arial,helvetica" size="2" class="copy" color="#A0A0A0"> Copyright &copy; 2000 Intergalactic Pizza Corporation</FONT>
+            </TD>
+         </TR>
+      </TABLE>
+   </BODY>
+</HTML>
+

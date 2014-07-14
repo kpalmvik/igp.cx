@@ -1,0 +1,24 @@
+<?
+	
+//	error_reporting(1); // Stäng av irriterande varningsmeddelanden		
+	
+	include("../script/const.igp");
+	include("../script/time.igp");  // hämta funktioner för tidshantering
+	include("orderfunctions.igp");
+	
+	$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+	// Uppdatera listan av pizzor
+	if($update == "true") { // Skriv ut listan av beställda pizzor
+		Header("Location: pizzalist.igp?orderid=$orderid&profileid=$profileid&sid=$sid&lang=$lang&cur=$cur");
+		exit(); 
+	} 
+	// Profil
+	elseif($profileid != "w" and $first) CreateOrderIDAndSIDForProfile(); // Skapa orderid samt en säkerhetsnyckel
+	// Ingen profil
+	elseif($profileid == "w") CheckSIDAndOrderID(); // Kolla om orderid och sid stämmer
+	pg_Close($db);
+//h = help, visa hjälptexten på pizzalist
+//f = visa välkomstmeddelandet
+	Header("Location: pizzalist.igp?orderid=$orderid&profileid=$profileid&sid=$sid&lang=$lang&cur=$cur&h=1&f=1");
+
+?>

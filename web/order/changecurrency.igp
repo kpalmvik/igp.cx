@@ -1,0 +1,17 @@
+<?
+	
+	require("../script/lang.igp");
+	require("../script/time.igp");
+	require("../script/const.igp");
+	
+	JustValidSIDs($profileid, $orderid, $sid, "sid500.igp?lang=$lang");
+	
+	if($cur) {
+		$db = pg_Connect("dbname = " . dbDB . " user = " . dbUSERNAME . " password = " . dbPASSWORD);
+		pg_Exec("UPDATE igpOrder SET currency = '$cur' WHERE orderid = $orderid");
+		
+		Header("Location: pizzalist.igp?orderid=$orderid&profileid=$profileid&sid=$sid&lang=$lang&cur=$cur");
+	} else
+		Header("Location: pizzalist.igp?orderid=$orderid&profileid=$profileid&sid=$sid&lang=$lang&cur=$cur");
+
+?>

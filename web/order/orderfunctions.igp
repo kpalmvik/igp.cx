@@ -1,0 +1,181 @@
+<?
+function GetCurrency() {
+	global $profileid, $orderid, $cur;
+	
+	if($profileid == "w")
+		$result = pg_Exec("SELECT currency FROM igpOrder WHERE orderid = $orderid");
+	else
+		$result = pg_Exec("SELECT currency FROM igpProfiles WHERE profileid = $profileid");
+
+	$cur = pg_Result($result, 0, "currency");	
+}
+
+function CreateOrderIDAndSIDForProfile() {
+	global $username, $first, $password, $lang, $profileid, $sid, $orderid, $HTTP_USER_AGENT, $REMOTE_ADDR, $cur;
+	$username = StrToLower($username); // lcase:a användarnamnet, så det fungerar
+	
+	// om det inkommande lösenordet inte är krypterat, gör det!
+	if ($first == 1) $password = crypt($password, "lö");
+	
+	// Hämta hem lösenordet från databasen
+	$result = pg_Exec("SELECT password FROM igpProfiles WHERE username='$username'");
+	
+	// användaren finns inte
+	if (!pg_NumRows($result)) {
+		Header("Location: user404.igp?username=$username&lang=$lang"); // Skicka vidare till sida som säger det
+		exit();
+	}
+	
+	$savedPassword = pg_Result($result, 0, 0);
+	
+	// kryptera lösenordet från databasen för att kunna jämföra med inkommande lösenord
+	$savedPassword = crypt($savedPassword, "lö");
+	
+	// om lösenorden inte stämmer, är de skilda från varandra... typ();
+	if ($password != $savedPassword) {
+		Header("Location: user403.igp?username=$username&lang=$lang"); // Skicka vidare till sida som säger det
+		exit(); // avsluta all kod på sidan :)
+	}
+	
+	$result = pg_Exec("SELECT profileid FROM igpProfiles WHERE username='$username'");
+	$profileid = pg_Result($result, 0, "profileid");
+
+	// Hämta antalet poster i beställningstabellen
+	$result = pg_Exec("SELECT orderid FROM igpOrder ORDER BY orderid DESC");
+	$orderid = pg_Result($result, 0, 0) + 1; // Sätt orderid:et till antal rader + 1
+	
+	// Skapa orderid:et i tabellen igpOrder
+	pg_Exec("INSERT INTO igpOrder(orderid, profileid, time, browser, ip) VALUES($orderid, $profileid, " . time(). ", '$HTTP_USER_AGENT', '$REMOTE_ADDR')");
+	pg_Exec("UPDATE igpProfiles SET latestlogin='" . time() . "' WHERE profileid = $profileid");
+	
+	// Leta upp korrekt valuta
+	$result = pg_Exec("SELECT currency FROM igpProfiles WHERE profileid = $profileid");
+	$cur = pg_Result($result, 0, "currency");
+	
+	// Skriv in profilens valuta i ordern
+	pg_Exec("UPDATE igpOrder SET currency = '$cur' WHERE orderid = $orderid");
+
+//Hämta ett sid för profilen..Måste fungera!	
+	$sid = encodeTime($orderid, $profileid); // sid = Security ID
+	
+}
+
+function CheckSIDAndOrderID() {
+	global $sid, $orderid, $profileid, $lang, $cur, $HTTP_USER_AGENT, $REMOTE_ADDR;
+	JustValidSIDs($profileid, $orderid, $sid, "sid500.igp?lang=$lang"); //Kolla om vi har ett giltigt SID
+	
+	$result = pg_Exec("SELECT orderid FROM igpOrder WHERE orderid=$orderid");
+	if(!pg_NumRows($result)) { // Det specificerade orderid:t finns inte, klaga!
+		Header("Location: order404.igp?lang=$lang");
+		exit();
+	}
+
+	// Skriv in 3vlig information om användarens mjukvara
+	pg_Exec("UPDATE igpOrder SET time = " . time(). ", browser = '$HTTP_USER_AGENT', ip = '$REMOTE_ADDR' WHERE orderid = $orderid");
+	
+	// Leta upp korrekt valuta
+	$result = pg_Exec("SELECT currency FROM igpOrder WHERE orderid = $orderid");
+	$cur = pg_Result($result, 0, "currency");
+}
+
+	function EchoPizzaList() {
+		global $db, $orderid, $profileid, $sid, $lang, $cur, $sumPizzas;
+
+		// Hämta korrekt valutakurs
+		$curres = pg_Exec("SELECT value FROM igpCurrency WHERE currency = '$cur'");
+		if(pg_NumRows($curres)) {
+			$curvalue = pg_Result($curres, 0, 0);
+		} else {
+			$curvalue = 0.01;
+		}
+	
+		// ------------------------
+		// Läs in de fasta pizzorna
+		// ------------------------
+		
+		
+				
+		$result = pg_Exec($db, "SELECT igporderpizza.count, igppizzas.pizzaname, igppizzas.price, igppizzas.id FROM igpPizzas, igpOrderPizza WHERE igpOrderPizza.pizzaid > -1 AND igpOrderPizza.orderid = $orderid and igpPizzas.id = (igpOrderPizza.pizzaid + 1)");
+		for($i = 0; $i < pg_NumRows($result); $i++) {
+			echo "<TR><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">";
+			echo pg_Result($result, $i, "pizzaname") . "</FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">";
+			echo pg_Result($result, $i, "count") . "</FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">";
+
+			$pizzas = pg_Result($result, $i, "count");
+			$price = pg_Result($result, $i, "price");
+			echo intval(($price * $pizzas) / $curvalue) . " $cur</TD><TD WIDTH=120>";
+
+			$pizza = pg_Result($result, $i, "id");
+
+			// Totalsummor
+			$sumPizzas += $pizzas;
+			$sumMoney += intval(($price * $pizzas) / $curvalue);
+			
+			// Länkar för att ta bort och ändra aktuell pizza
+			echo "<A HREF=\"rmpizza.igp?orderid=$orderid&profileid=$profileid&sid=$sid&pizza=$pizza&lang=$lang&cur=$cur\"><IMG SRC=\"../images/delete.gif\" BORDER=0 WIDTH=20 HEIGHT=20 ALT=\"Ta bort\" HSPACE=5 VSPACE=0></A>";
+			echo "<A HREF=\"numpizzas.igp?function=4&sid=$sid&pizza=$pizza&orderid=$orderid&profileid=$profileid&sid=$sid&lang=$lang&cur=$cur\"><IMG SRC=\"../images/change.gif\" BORDER=0 WIDTH=20 HEIGHT=20 ALT=\"Ändra antal\" HSPACE=5 VSPACE=0></A></TD></TR>";
+		}
+		
+		// -----------------------
+		// Läs in de egna pizzorna
+		// -----------------------
+		
+		// Hämta favoritpizzorna		
+		for($i = 0; $i < 5; $i++) {
+			$result = pg_Exec("SELECT pizzaid, count FROM igpOrderPizza WHERE orderid = $orderid AND pizzaid = (-1 * ($i + 1))");
+			if(pg_NumRows($result)) { // Pizzaid -1 eller -2, etc finns
+				$count = pg_Result($result, 0, "count");
+				if($count) {
+					if($profileid == "w")
+						$result = pg_Exec("SELECT pizza" . ($i + 1) . " FROM igpOrder WHERE orderid = $orderid");
+					else
+						$result = pg_Exec("SELECT pizza" . ($i + 1) . " FROM igpProfiles WHERE profileid = $profileid");
+
+					// Ta reda på ingredienserna
+					$ingres = pg_Exec("SELECT igpIngredients.price FROM igpIngredients, igpOrderPizza WHERE igpOrderPizza.orderid = $orderid AND igpOrderPizza.pizzaid = " .  (-1 * ($i + 1)) . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+					$price = 2;
+					for($j = 0; $j < pg_NumRows($ingres); $j++) {
+						$price += pg_Result($ingres, $j, "price");
+					}
+		
+					$price /= $curvalue;
+					echo "<TR><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">" . pg_Result($result, 0, "pizza" . ($i + 1)) . "</FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">$count</FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">" . intval($price * $count) . " $cur</FONT></TD><TD>";
+
+					// Länkar för att ta bort och ändra aktuell pizza
+					echo "<A HREF=\"rmpizza.igp?favorite=true&orderid=$orderid&profileid=$profileid&sid=$sid&pizza=" . -1 * ($i + 1) . "&lang=$lang&cur=$cur\"><IMG SRC=\"../images/delete.gif\" BORDER=0 WIDTH=20 HEIGHT=20 ALT=\"Ta bort\" HSPACE=5 VSPACE=0></A>";
+					echo "<A HREF=\"numpizzas.igp?favorite=true&function=4&pizza=" . -1 * ($i + 1) . "&orderid=$orderid&profileid=$profileid&sid=$sid&lang=$lang&cur=$cur\"><IMG SRC=\"../images/change.gif\" BORDER=0 WIDTH=20 HEIGHT=20 ALT=\"Ändra antal\" HSPACE=5 VSPACE=0></A></TD></TR>";
+					$sumPizzas += $count;
+					$sumMoney += intval($price * $count);
+				}
+			}
+		}
+		
+		// Hämta de bara namngivna pizzorna
+		$result = pg_Exec("SELECT name, pizzaid FROM igpOrderPizzaNames WHERE orderid = $orderid");
+		for($i = 0; $i < pg_NumRows($result); $i++) {
+			$countres = pg_Exec("SELECT igpOrderPizza.count, igpIngredients.price FROM igpOrderPizza, igpIngredients WHERE igpOrderPizza.orderid = $orderid AND igpOrderPizza.pizzaid = " . pg_Result($result, $i, "pizzaid") . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+			$count = pg_Result($countres, 0, "count");
+			
+			$price = 2;
+			for($j = 0; $j < pg_NumRows($countres); $j++) {
+				$price += pg_Result($countres, $j, "price");
+			}
+			
+			$price /= $curvalue;
+			
+			echo "<TR><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">" . pg_Result($result, $i, "name") . "</FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">$count</FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\">" . intval($price * $count) . " $cur</FONT></TD><TD>";
+			
+			// Länkar för att ta bort och ändra aktuell pizza
+			echo "<A HREF=\"rmpizza.igp?orderid=$orderid&profileid=$profileid&sid=$sid&pizza=" . pg_Result($result, $i, "pizzaid") . "&lang=$lang&cur=$cur\"><IMG SRC=\"../images/delete.gif\" BORDER=0 WIDTH=20 HEIGHT=20 ALT=\"Ta bort\" HSPACE=5 VSPACE=0></A>";
+			echo "<A HREF=\"numpizzas.igp?function=4&favorite=notquitebut&sid=$sid&pizza=" . pg_Result($result, $i, "pizzaid") . "&orderid=$orderid&profileid=$profileid&sid=$sid&lang=$lang&cur=$cur\"><IMG SRC=\"../images/change.gif\" BORDER=0 WIDTH=20 HEIGHT=20 ALT=\"Ändra antal\" HSPACE=5 VSPACE=0></A></TD></TR>";
+
+			$sumPizzas += $count;
+			$sumMoney += intval($price * $count);
+
+		}
+				
+		?>
+			<TR>
+				<TD COLSPAN=4><FONT FACE="arial,helvetica" SIZE="3" CLASS="txt"><A HREF="addpizza.igp?lang=<? echo $lang . "&profileid=" . $profileid . "&sid=" . $sid . "&orderid=" . $orderid . "&cur=" . $cur;?>"><B><I>Klicka här för att lägga till en ny pizza</I></B></A></FONT></TD>
+			</TR>
+		<?	if($sumPizzas) echo "<TR><TD COLSPAN=4><HR></TD></TR><TR><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\"><B>Summa:</B></FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\"><B>$sumPizzas</B></FONT></TD><TD><FONT FACE=\"arial,helvetica\" SIZE=\"2\" CLASS=\"txt\"><B>$sumMoney $cur</B></FONT></TD><TD>&nbsp;</TD></TR>"; } ?>

@@ -1,0 +1,197 @@
+<? 
+	require("script/const.igp");
+	require("script/common.igp");
+	// Räkna antalet träffar på den här sidan
+	counter();
+?>
+<HTML>
+<HEAD>
+	<LINK REL="STYLESHEET" TYPE="text/css" HREF="css/default.css">
+	<TITLE>Välkommen till Intergalactic Pizza</TITLE>
+</HEAD>
+<BODY BGCOLOR="#363636" TEXT="#E0E0E0" LINK="#E0E0E0" VLINK="#E0E0E0" ALINK="#CCCC99" MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 RIGHTMARGIN=0>
+<!--Skyline och tjafs på toppen-->
+
+<CENTER>
+<TABLE WIDTH=100% ALIGN=center BORDER=0 CELLSPACING=0 CELLPADDING=0>
+	<TR>
+		<TD BGCOLOR="#646464" BACKGROUND="images/topback.gif"><IMG
+SRC="images/welcome.gif"
+WIDTH=305 HEIGHT=19 BORDER=0 ALT="Välkommen till Intergalactic Pizza" ALIGN=left HSPACE=5 VSPACE=3><IMG SRC="images/www.gif" WIDTH=90 HEIGHT=19 BORDER=0 ALT="www.igp.cx" ALIGN=right HSPACE=10 VSPACE=3></TD>
+	</TR>
+	<TR>
+		<TD WIDTH=200 BGCOLOR="#646464"
+BACKGROUND="images/skyline.gif"><IMG SRC="images/star1.gif" WIDTH=200 HEIGHT=19 BORDER=0 ALT="Pizza du kan se i" HSPACE=0 VSPACE=0></TD>
+	</TR>
+	<TR>
+		<TD WIDTH=200><IMG SRC="images/star2.gif" WIDTH=200 HEIGHT=20 BORDER=0 ALT="stjärnorna efter" HSPACE=0 VSPACE=0><BR CLEAR="all"><IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=210 VSPACE=0 ALT="" ALIGN="center"></TD>
+	</TR>
+</TABLE>
+
+<!--
+
+****************
+HÄR BÖRJAR SIDAN
+****************
+
+-->
+<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD WIDTH=110><IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=55 VSPACE=0 ALT=""></TD>
+		<TD WIDTH=490><IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=245 VSPACE=0 ALT=""></TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+			<CENTER>
+				<IMG SRC="images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza" ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all">
+				<FONT FACE="arial,helvetica" SIZE=1 CLASS="quicklink">
+					<A HREF="order.igp?lang=<? echo $lang ?>">Beställ pizza</A> | <A HREF="member.igp?lang=<? echo $lang ?>">Bli medlem</A> | <A HREF="igp/?lang=<? echo $lang ?>">Om IGP</A> | <A HREF="./">Change language</A>
+				</FONT>
+			</CENTER>		
+			<BR>
+		</TD>
+	</TR>
+	<TR>
+		<TD><BR>&nbsp;</TD>
+	</TR>
+<!--Logga in snabbt
+	<TR>
+		<TD COLSPAN=2 VALIGN="top" ALIGN="center">
+			<FONT FACE="arial,helvetica" SIZE=2>
+			<FORM ACTION="order/main.igp"
+METHOD="post">
+				<INPUT TYPE="hidden" NAME="lang"
+VALUE="<? echo $lang; ?>">
+				<INPUT TYPE="hidden" NAME="first"
+VALUE="1">						
+				<TABLE>
+				<TR>
+				<TD>
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><B>Användarnamn:</B></FONT><BR>						
+					<INPUT
+TYPE="text" NAME="username" SIZE=20 MAXLENGTH=50 TITLE="Här skriver du in
+ditt användarnamn, t.ex Nils Karlsson">
+				</TD>
+<TD>&nbsp;&nbsp;</TD>						<TD>
+								<FONT FACE="arial,helvetica" SIZE=2 CLASS="txt"><B>Lösenord:</B></FONT><BR>
+								<INPUT
+TYPE="password" NAME="password" SIZE=20 MAXLENGTH=50 TITLE="Här skriver du
+in ditt lösenord, t.ex L31f-5u63R">
+							</TD>
+
+<TD>&nbsp;&nbsp;</TD>							
+
+<TD>&nbsp;<BR><INPUT TYPE="submit" VALUE="Logga in &gt;&gt;&gt;"></TD>
+						</TR>
+					</TABLE>
+
+				</FORM>
+				
+			</FONT>
+		</TD>
+	</TR>-->
+
+<!--Beställ pizza-->
+	<TR>
+		<TD ALIGN="center" VALIGN="top"><A HREF="order.igp?lang=<? echo $lang ?>"><IMG SRC="images/main_pic_order.gif" WIDTH=100 HEIGHT=100 ALIGN="center" HSPACE=0 VSPACE=0 ALT="" BORDER=0></A></TD>
+		<TD VALIGN="top">
+			<FONT FACE="arial,helvetica" COLOR="#FFC000">
+				<H2>Beställ pizza</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica">
+			<DIV CLASS="txt">
+			Letar du efter möjligheten att beställa pizza online har du kommit helt rätt. Vi på <B>igp.cx</B> har specialiserat oss på pizzabeställningar från hela solsystemet.<BR>		
+			&nbsp;&nbsp;&nbsp;Du kan välja mellan många färdigkomponerade pizzor, du har möjlighet att komponera dina egna och du ser hela tiden priset i din lokala valuta.<BR>
+			&nbsp;&nbsp;&nbsp;Så vänta inte längre utan beställ ditt livs första intergalaktiska pizza nu. Vi lovar att vi ska försöka göra allt för att det inte blir din sista.<BR>
+			</DIV>
+			<DIV CLASS="txt" ALIGN="right">
+			<A HREF="order.igp?lang=<? echo $lang ?>">Beställ pizza &gt;&gt;&gt;</A>
+			</DIV>
+			</FONT>
+		</TD>
+	</TR>
+
+	<TR>
+		<TD COLSPAN=2><IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=0 VSPACE=10 ALT=""></TD>
+	</TR>
+
+<!--Bli medlem-->
+	<TR>
+		<TD ALIGN="center" VALIGN="top"><A HREF="member.igp?lang=<? echo $lang ?>"><IMG SRC="images/main_pic_member.gif" WIDTH=100 HEIGHT=100 ALIGN="center" HSPACE=0 VSPACE=0 ALT="" BORDER=0></A></TD>
+		<TD VALIGN="top">
+			<FONT FACE="arial,helvetica" COLOR="#FFC000">
+			<H2>Bli medlem</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica">
+			<DIV CLASS="txt">
+			Beställer du ofta pizza på IGP lönar det sig att bli medlem i ClubIGP. Det är helt gratis, gör att du slipper skriva in dina användaruppgifter varje gång och ger dig massor av andra fördelar.<BR>
+			</DIV>
+			<DIV CLASS="txt" ALIGN="right">
+			<A HREF="member.igp?lang=<? echo $lang ?>">Läs mer om ClubIGP &gt;&gt;&gt;</A><BR>
+			<A HREF="order.igp?lang=<? echo $lang ?>">Jag är redan medlem &gt;&gt;&gt;</A>			
+			</DIV>
+			</FONT>
+		</TD>
+	</TR>
+
+	<TR>
+		<TD COLSPAN=2><IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=0 VSPACE=10 ALT=""></TD>
+	</TR>
+
+<!--Om IGP-->	
+	<TR>
+		<TD ALIGN="center" VALIGN="top"><A HREF="igp/?lang=<? echo $lang ?>"><IMG SRC="images/main_pic_igp.gif" WIDTH=100 HEIGHT=100 ALIGN="center" HSPACE=0 VSPACE=0 ALT="" BORDER=0></A></TD>
+		<TD VALIGN="top">
+			<FONT FACE="arial,helvetica" COLOR="#FFC000">
+			<H2>Om IGP</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica">
+			<DIV CLASS="txt">
+			Som ett av solsystemets ledande pizzaföretag är det naturligt att det går många rykten om företaget. Ett av det mest frekvent förekommande är att IGP egentligen är ett projektarbete i kursen databas på Hulebäcksgymnasiet.<BR>
+			&nbsp;&nbsp;&nbsp;För att definitivt avliva dessa grundlösa myter ger vi dig här en exklusiv inblick i hur företaget arbetar.<BR>
+			</DIV>
+			<DIV CLASS="txt" ALIGN="right">
+			<A HREF="igp/?lang=<? echo $lang ?>">Mer om IGP &gt;&gt;&gt;</A><BR>
+			<A HREF="igp/thanks.igp?lang=<? echo $lang ?>">Tack till följande personer &gt;&gt;&gt;</A>
+			</DIV>
+			</FONT>
+		</TD>
+	</TR>
+
+<!--	<TR>
+		<TD COLSPAN=2><IMG SRC="images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=0 VSPACE=10 ALT=""></TD>
+	</TR> -->
+
+<!--Statistik och sånt-->
+<!--
+	<TR>
+		<TD ALIGN="center" VALIGN="top"><A HREF="stat/?lang=<? echo $lang ?>"><IMG SRC="images/main_pic_stat.jpg" WIDTH=100 HEIGHT=100 ALIGN="center" HSPACE=0 VSPACE=0 ALT="" BORDER=0></A></TD>
+		<TD VALIGN="top">
+			<FONT FACE="arial,helvetica" COLOR="#FFC000">
+			<H2>Statistik och sånt</H2>
+			</FONT>
+			<FONT FACE="arial,helvetica">
+			<DIV CLASS="txt">
+			När de flesta företag tiger som muren om hur många pizzor de säljer går IGP åt rakt motsatt håll. <BR>
+			&nbsp;&nbsp;&nbsp;Här har du möjlighet att i detalj studera hur många pizzor som beställts, vilken pizza som är den populäraste och vilken tid som flest pizzor beställs.<BR>
+			</DIV>
+			<DIV CLASS="txt" ALIGN="right">
+			<A HREF="stat/?lang=<? echo $lang ?>">Kalenderbitare, ditåt! &gt;&gt;&gt;</A>
+			</DIV>
+			</FONT>
+		</TD>
+	</TR> -->
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>
+</TABLE>
+</CENTER>
+</BODY>
+</HTML>

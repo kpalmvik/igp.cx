@@ -1,0 +1,59 @@
+<?
+// INNEHÅLLER ALLMÄNNA FUNKTIONER FÖR IGP 
+
+
+	function TrimDec($number) {
+
+/*	Trimmar ett långt tal till ett lite kortare
+		Indata: tal som ska friseras
+		Utdata: Lätt friserat tal
+	ex.
+		In: 23.12632673862
+		Ut: 23.12
+*/
+		//leta reda på punktens placering
+		$dotPos = strPos($number, ".");
+		$newnumber = substr($number, 0, $dotPos); //Kopiera från början fram till punkten
+		
+		if(substr($number, $dotPos, 1) != "0"){
+			if(substr($number, $dotPos + 1, 1) != "0"){
+				$newnumber .= substr($number, $dotPos + 1, 1);
+				}
+		}
+		return $newnumber;
+				
+		
+		
+	}
+
+	
+	// Funktion för att ta bort tecken < och >
+/*	function strip_tags($tag) {
+		for($i = 0; $i < strlen($tag); $i++) { // Gå igenom hela strängen
+			$char = substr($tag, $i, 1); // Ta ut ett tecken
+			if(!($char == "<" or $char == ">")) // Se till att inga tag-tecken hänger med
+				$newtag .= $char;
+		}
+		return $newtag; // Returnera den nya strängen
+	}*/
+
+	// counter uppdaterar antalet besökare på en sida
+	function counter()  {
+		global $PHP_SELF;
+		// Hämta aktuell sida	
+		$page = $PHP_SELF;
+		
+		// Anslut till databasen
+		$db = pg_Connect("dbname = " . dbDB . " user = " . dbUSERNAME . " password = " . dbPASSWORD);
+		// Kolla om sidan existerar i databasen
+		$result = pg_Exec("SELECT count FROM igpCounter WHERE page = '$page'");
+		if(!pg_NumRows($result)) { // Det finns ingen sådan sida
+			pg_Exec("INSERT INTO igpCounter VALUES('$page', 1)");
+		} else { // Sidan finns, uppdatera count:en
+			$count = pg_Result($result, 0, 0);
+			$count++;
+			pg_Exec("UPDATE igpCounter SET count = $count WHERE page = '$page'");
+		}
+	}
+	
+?>

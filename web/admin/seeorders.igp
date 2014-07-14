@@ -1,0 +1,193 @@
+<? 
+	require("../script/const.igp"); 
+	require("../script/lang.igp");
+?>
+<HTML>
+<HEAD>
+	<TITLE>Se beställningar</TITLE>
+	<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">
+</HEAD>
+<? include("../header_sub.igp") ?>
+
+
+<? if(!$function) {	?>
+		<TABLE BORDER=0 WIDTH=600>
+			<TR>
+				<TD>
+					<FONT FACE="arial,helvetica" SIZE=2 COLOR="#FFC000">
+					<H1>Beställningshantering</H1>
+					<H2>Relativ historia</H2>
+					</FONT>
+					<FONT FACE="arial,helvetica" SIZE=2>
+					<DIV STYLE="txt">
+					Alla beställning som gjorts från och med x antal dagar sedan.
+					<UL>
+					<FORM action="seeorders.igp" method="post">
+						<INPUT type="hidden" name="function" value="1">
+						Antal dagar: &nbsp;&nbsp;&nbsp;<INPUT type="text" name="daysback" value="3" size=8>
+						&nbsp;&nbsp;&nbsp;Bara fullständiga beställningar
+						<INPUT type="checkbox" name="JustDoneOnes" value="1">&nbsp;&nbsp;&nbsp;
+						<BR><BR>
+						<INPUT type="submit" value=" Nästa >>> ">
+					</FORM><BR><BR>
+					</UL>
+					<FONT FACE="arial,helvetica" SIZE=2 COLOR="#FFC000">
+						<H2>Absolut historia</H2>
+					</FONT>
+					<FONT FACE="arial,helvetica" SIZE=2>
+						<DIV STYLE="txt">
+							Visar en valbar range av beställningar.
+							<UL>
+								<FORM action="seeorders.igp" method="post">
+									<INPUT TYPE="hidden" NAME="function" VALUE="1">
+									<INPUT TYPE="hidden" NAME="show" VALUE="fromto">
+
+									<DIV CLASS="txt" STYLE="color: #FFC000"><B>Från och med:</B></DIV><BR>
+									<INPUT TYPE="radio" NAME="radiofrom" VALUE="number" CHECKED>&nbsp;<INPUT TYPE="text" NAME="fromorder" SIZE=3>
+									<BR>
+									<INPUT TYPE="radio" NAME="radiofrom" VALUE="first">&nbsp;Första ordern
+									
+									<BR><BR>
+									
+									<DIV CLASS="txt" STYLE="color: #FFC000"><B>Till och med:</B></DIV><BR>
+									<INPUT TYPE="radio" NAME="radioto" VALUE="number" CHECKED>&nbsp;<INPUT TYPE="text" NAME="toorder" SIZE=3>
+									<BR>
+									<INPUT TYPE="radio" NAME="radioto" VALUE="last">&nbsp;Sista orden
+									<BR><BR>
+									Bara fullständiga beställningar <INPUT TYPE="checkbox" NAME="JustDoneOnes" VALUE=1>
+									<BR><BR>
+									<INPUT TYPE="submit" VALUE=" Nästa &gt;&gt;&gt; ">
+								</FORM>
+							</UL>
+						</DIV>
+					</FONT>
+				</TD>
+			</TR>
+			<TR>
+				<TD COLSPAN=2 ALIGN="center">
+				<BR>	
+					<!--Copyright-->
+					<HR SIZE=1 NOSHADE>
+					<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+						Copyright &copy; 2000 Intergalactic Pizza Corporation
+					</FONT>
+				</TD>
+			</TR>		
+		</TABLE>
+	</BODY>
+</HTML>
+
+<? } elseif($function == 1) { ?> <FONT face="Arial" color="#FFC000"><H1>Beställningar från och med
+<? echo $daysback; ?> dagar sedan
+</H1></FONT>
+<?
+			
+			$db = pg_Connect("dbname = " . dbDB . " user = " . dbUSERNAME . " password = " . dbPASSWORD);
+			
+			setlocale("LC_TIME", return_lang("sv", 11));
+
+			$from = time() - ($daysback * 86400);
+
+			if($radiofrom == "first")
+				$firststring = "";
+			else
+				$firststring = "AND orderid >= $fromorder";
+			
+			if($radioto == "last")
+				$lateststring = "";
+			else
+				$lateststring = "AND orderid <= $toorder";
+			
+			if($show)
+				if($JustDoneOnes) // Kolla om användaren har valt "Endast fullständiga beställningar"
+					$result = pg_Exec("SELECT orderid, profileid FROM igpOrder WHERE done = true $firststring $lateststring ORDER BY time DESC");
+				else
+					$result = pg_Exec("SELECT orderid, profileid FROM igpOrder WHERE orderid != 0 $firststring $lateststring ORDER BY time DESC");
+			else
+				if($JustDoneOnes) // Kolla om användaren har valt "Endast fullständiga beställningar"
+					$result = pg_Exec("SELECT orderid, profileid FROM igpOrder WHERE time >= $from AND done = true ORDER BY time DESC");
+				else
+					$result = pg_Exec("SELECT orderid, profileid FROM igpOrder WHERE time >= $from ORDER BY time DESC");
+				
+			echo "<FONT SIZE=5 FACE=\"Arial\" COLOR=\"#FFFFFF\">" . pg_NumRows($result) . " beställningar</FONT>";
+			echo "<TABLE BORDER=0 CELLSPACING=30 CELLPADDING=0 WIDTH=600>";
+
+			
+			for($i = 0; $i < pg_NumRows($result); $i++) {
+				// Hämta order- samt profilid och lägg ner i id-variabeln
+				$id = pg_Fetch_Array($result, $i);
+
+
+				// Hämta användarinformation
+				// -------------------------
+				if($id["profileid"]) // Användaren har en profil, alltså sparas ingen userinformation här
+					$namesres = pg_Exec("SELECT igpProfiles.firstname, igpProfiles.lastname, igpOrder.time, igpOrder.browser FROM igpProfiles, igpOrder WHERE igpProfiles.profileid = " . $id["profileid"] . " AND igpOrder.orderid = " . $id["orderid"]);
+				else
+					$namesres = pg_Exec("SELECT firstname, lastname, time, browser FROM igpOrder WHERE orderid = " . $id["orderid"]);
+				
+				$info = pg_Fetch_Array($namesres, 0);
+
+				// Skriv ut namn samt pizzor
+				echo "<TR>";
+					echo "<TD>"; 
+						echo "<FONT COLOR=\"#FFC000\">" . $id["orderid"] . ": <B>" . $info["firstname"] . " " . $info["lastname"] . "</B></FONT> - " . strftime("%H:%M", $info["time"]) . " " . strftime("%x", time()) . "&nbsp;&nbsp;&nbsp; <A HREF=\"moreinfo.igp?orderid=" . $id["orderid"] . "&profileid=" . $id["profileid"] . "\">Mer info >>></A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A HREF=\"removeorder.igp?orderid=" . $id["orderid"] . "&daysback=$daysback&JustDoneOnes=$JustDoneOnes&show=$show&fromorder=$fromorder&toorder=$toorder&radiofrom=$radiofrom&radioto=$radioto\">Ta bort</A>";
+						echo "<HR>";
+						
+						
+						// Hämta färdiga pizzor
+						$pizres = pg_Exec("SELECT igporderpizza.count, igppizzas.pizzaname, igppizzas.price FROM igpPizzas, igpOrderPizza WHERE igpOrderPizza.pizzaid > -1 AND igpOrderPizza.orderid = " . $id["orderid"] . " and igpPizzas.id = (igpOrderPizza.pizzaid + 1)");
+						for($j = 0; $j < pg_NumRows($pizres); $j++) {
+							echo pg_Result($pizres, $j, "count") . " st <B>" . pg_Result($pizres, $j, "pizzaname") . "</B><BR>";
+							$sumPizzas++;
+						}
+				
+						// Hämta favoritpizzorna
+						for($j = 0; $j < 5; $j++) {
+							$pizres = pg_Exec("SELECT pizzaid, count FROM igpOrderPizza WHERE orderid = " . $id["orderid"] . " AND pizzaid = (-1 * ($j + 1))");
+							if(pg_NumRows($pizres)) { // Pizzaid -1 eller -2, etc finns
+								$count = pg_Result($pizres, 0, "count");
+								if($count) {
+									if($id["profileid"])
+										$pizname = pg_Exec("SELECT pizza" . ($j + 1) . " FROM igpProfiles WHERE profileid = " . $id["profileid"]);
+									else
+										$pizname = pg_Exec("SELECT pizza" . ($j + 1) . " FROM igpOrder WHERE orderid = " . $id["orderid"]);
+				
+									// Ta reda på ingredienserna
+									$ingredients = "";
+									$ingres = pg_Exec("SELECT igpIngredients.ingredientname FROM igpIngredients, igpOrderPizza WHERE igpOrderPizza.orderid = " . $id["orderid"] . " AND igpOrderPizza.pizzaid = " .  (-1 * ($j + 1)) . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+									for($k = 0; $k < pg_NumRows($ingres); $k++)
+										$ingredients .= pg_Result($ingres, $k, "ingredientname") . ", ";
+									$ingredients = substr($ingredients, 0, strlen($ingredients) - 2); // Plocka bort överflödiga komman i slutet
+									
+									echo "$count st <B>" . pg_Result($pizname, 0, 0) . "</B> <SMALL>($ingredients)</SMALL><BR>";
+									$sumPizzas++;
+
+								}
+							}
+						}
+
+						// Hämta de bara namngivna pizzorna
+						$pizres = pg_Exec("SELECT name, pizzaid FROM igpOrderPizzaNames WHERE orderid = " . $id["orderid"]);
+						for($j = 0; $j < pg_NumRows($pizres); $j++) {
+							$countres = pg_Exec("SELECT igpOrderPizza.count, igpIngredients.ingredientname FROM igpOrderPizza, igpIngredients WHERE igpOrderPizza.orderid = " . $id["orderid"] . " AND igpOrderPizza.pizzaid = " . pg_Result($pizres, $j, "pizzaid") . " AND igpIngredients.id = igpOrderPizza.ingredientid");
+							$count = pg_Result($countres, 0, "count");
+
+							// Ta reda på ingredienserna
+							$ingredients = "";
+							for($k = 0; $k < pg_NumRows($countres); $k++)
+								$ingredients .= pg_Result($countres, $k, "ingredientname") . ", ";
+							$ingredients = substr($ingredients, 0, strlen($ingredients) - 2); // Plocka bort överflödiga komman i slutet
+							
+							echo "$count st <B>" . pg_Result($pizres, $j, 0) . "</B> <SMALL>($ingredients)</SMALL><BR>";
+							$sumPizzas++;
+						}
+				
+					echo "</TD>";
+				echo "</TR>";
+			}			
+		
+		?>
+</TABLE></FONT>
+<? echo "<FONT SIZE=4 FACE=\"Arial\" COLOR=\"#FFC000\">Totalt $sumPizzas olika pizzor</FONT>";   } ?>
+</BODY>
+</HTML>

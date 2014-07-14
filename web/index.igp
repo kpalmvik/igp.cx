@@ -1,0 +1,78 @@
+<?php	
+
+	require("script/const.igp");
+	require("script/common.igp");
+	// Räkna antalet besökare på den här sidan
+	counter();
+
+	// Gå till adminsidan
+	if(stristr($HTTP_HOST, "admin")) {
+		Header("Location: admin.igp");
+		exit();
+	}
+
+	// Här ligger huvudsidan som ska se ut som den ser ut...öhh...ungefär.
+	require("script/const.igp");
+	require("script/lang.igp");
+
+	GetLang();
+?>
+
+<HTML>
+	<HEAD>
+		<LINK REL="STYLESHEET" TYPE="text/css" HREF="css/default.css">
+		<TITLE>IGP - Intergalactic Pizza</TITLE>
+	</HEAD>
+</HEAD>
+<BODY BGCOLOR="#363636" TEXT="#E0E0E0" LINK="#FFC000" VLINK="#FFC000" ALINK="#FFC000">
+<CENTER>
+	<TABLE WIDTH=500 BORDER=0 CELLSPACING=0 CELLPADDING=0>
+	<TR>
+		<TD ALIGN="center">
+			<FONT FACE="arial,helvetica">
+			<CENTER>
+				<IMG SRC="images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza" HSPACE=0 VSPACE=20><BR>
+				<IMG SRC="images/luke.jpg" WIDTH=400 HEIGHT=200 ALT="Still waiting for your pizza? ... www.igp.cx"><BR>
+			<H2>Välj språk / Select language:</H2>
+			<DIV CLASS="txt" ALIGN="center">
+		[ <A HREF="main.igp?lang=sv">Svenska</A> ] [ <A
+HREF="english.igp">English</A> ]
+<? 
+// Detta script är skyddat, eftersom vi inte har 
+// implementerat engelska i databasen
+	//Kollar i språkdatabasen på plats 0, där namnet på språket finns lagrat (ex "Svenska")
+//	$result = pg_Exec("SELECT text, lang from igpLanguage WHERE lid='0' ORDER BY text ASC");
+
+	// Loopar och sätter ut alternativ allteftersom språken hittas
+
+//	for($i = 0; $i < pg_NumRows($result); $i++) {
+//	$avail_lang = pg_Result($result, $i, "lang");
+	//Tillgängliga (avaliable) språks prefix
+//		$avail_langName = pg_Result($result, $i, "text");
+	//Tillgängliga språks namn
+	//Vi har redan lagt till svenska, så undvik det
+//		if($avail_lang != "sv"){ 
+//			if($lang == $avail_lang) $selected = " SELECTED";
+/*			?>
+			[ <A HREF="main.igp?lang=<? echo $avail_lang
+ ?>"><? echo $avail_langName ?></A> ]
+			<?
+*/
+//			$selected = "";
+//		}
+//	}
+?>
+			</DIV>
+			</FONT>
+			<P>
+			<CENTER>
+				<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy">
+					Copyright &copy; 2000 Intergalactic Pizza Corporation. All rights reserved.
+				</FONT>
+			</CENTER>
+		</TD>
+	</TR>
+	</TABLE>
+</CENTER>
+</BODY>
+</HTML>

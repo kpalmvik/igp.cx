@@ -1,0 +1,81 @@
+<?
+
+	// Nödvändiga funktioner
+	require("../script/time.igp");
+	require("../script/const.igp");
+	require("../script/lang.igp");
+	
+	JustValidSIDs($profileid, $orderid, $sid, "sid500.igp?lang=$lang");
+	
+?>
+<HTML>
+	<HEAD>
+	<LINK REL="STYLESHEET" TYPE="text/css" HREF="../css/default.css">	
+		<TITLE>IGP - Valutor</TITLE>
+	</HEAD>
+<? include("../header_sub.igp") ?>
+	<TABLE WIDTH="600" CELLSPACING=0 CELLPADDING=3 BORDER=0>
+	<TR>
+		<TD ALIGN="center">
+			<IMG SRC="../images/nothing.gif" WIDTH=1 HEIGHT=1 HSPACE=300 VSPACE=0 ALT=""><BR CLEAR="all">
+			<CENTER>
+				<IMG SRC="../images/logo.gif" WIDTH=400 HEIGHT=69 ALT="Intergalactic Pizza." ALIGN="center" HSPACE=0 VSPACE=5><BR CLEAR="all"><BR>&nbsp;			
+			</CENTER>
+		</TD>
+	</TR>
+	<TR>
+		<TD>
+		<FONT FACE="arial,helvetica" COLOR="#FFC000">
+		<H1><? lang($lang, 10108001); ?></H1>
+		</FONT>
+		<FONT FACE="arial,helvetica" SIZE=2>		
+		<DIV CLASS="txt">
+		<? lang($lang, 10108002); ?>
+		
+		<FORM ACTION="changecurrency.igp" METHOD="post">	
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+			<SELECT NAME="cur">
+				<?
+				
+					$db = pg_Connect("dbname=" . dbDB . " user=" . dbUSERNAME . " password=" . dbPASSWORD);
+					$result = pg_Exec("SELECT name, currency FROM igpCurrency ORDER BY name ASC");
+					
+					for($i = 0; $i < pg_NumRows($result); $i++)	{
+						$res_curName = pg_Result($result, $i, 0); //Läs in namnet
+						$res_curShort = pg_Result($result, $i, 1); //Förkortningen
+						if($cur == $res_curShort) $selected = " SELECTED"; //Om detta är den aktuella valutan väljer vi den som standard
+						
+						echo "<OPTION VALUE=\"$res_curShort\"$selected>$res_curName ($res_curShort)</OPTION>";
+						$selected = "";
+					}
+				?>
+			</SELECT>&nbsp;&nbsp;<INPUT TYPE="submit" VALUE=" <? lang($lang, 10108003); ?> ">
+		</FORM>
+		<BR>
+		<FORM ACTION="pizzalist.igp" METHOD="post">
+			<INPUT TYPE="hidden" NAME="orderid" VALUE="<? echo $orderid; ?>">
+			<INPUT TYPE="hidden" NAME="profileid" VALUE="<? echo $profileid; ?>">
+			<INPUT TYPE="hidden" NAME="sid" VALUE="<? echo $sid; ?>">
+			<INPUT TYPE="hidden" NAME="lang" VALUE="<? echo $lang; ?>">
+			<INPUT TYPE="hidden" NAME="cur" VALUE="<? echo $cur ?>">
+			<INPUT TYPE="submit" VALUE=" <? lang($lang, 10108004); ?> ">
+		</FORM>		
+		</DIV>
+		</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=2 ALIGN="center">
+		<BR>	
+<!--Copyright-->
+			<HR SIZE=1 NOSHADE>
+			<FONT FACE="arial,helvetica" SIZE=2 CLASS="copy" COLOR="#A0A0A0">
+				Copyright &copy; 2000 Intergalactic Pizza Corporation
+			</FONT>
+		</TD>
+	</TR>		
+</TABLE>
+</BODY></HTML>
