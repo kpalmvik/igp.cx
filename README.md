@@ -1,5 +1,5 @@
 #Intergalactic Pizza
-Intergalactic Pizza, formerly available at http://www.igp.cx, was a school project created by Kristofer Gustafsson (info@krigu.se) and Magnus Engström (info@aoeu.info) in april 2000. It was a part of the database course at IT/Data at [Hulebäcksgymnasiet](http://www.hule.harryda.se)
+Intergalactic Pizza, formerly available at http://www.igp.cx, was a school project created by Kristofer Gustafsson (info@krigu.se) and Magnus Engström (magnus@aoeu.info) in april 2000. It was a part of the database course at IT/Data at [Hulebäcksgymnasiet](http://www.hule.harryda.se)
 
 The basic idea was to offer online pizza ordering, something that was not yet widely available at the time. To make the project more interesting, the website feature pizza ordering from any planet within the solar system. Users could either sign up to become a member of ClubIGP, a membership club that simplified the ordering process by saving delivery information, or order pizza by entering the delivery information.
 
