@@ -20,5 +20,7 @@ If the user ordered a custom pizza, with any number of custom ingredients select
 
 The text on the website was, at least in some parts, translatable with the localized strings stored in the database and only numerical identifiers used in the code.
 
+Users could get the price of each pizza either in the Intergalactic Pizza currency, also known as IGP or Space Dollar, or in a number of local earth based currencies. The conversion rate between IGP and USD was fixed to 1, and the conversion rate between USD and other currencies were automatically updated from live currency information via xe.net.
+
 ##Code
 The code was imported from an old backup to Github in July 2014. This repository is solely kept on Github for historical reasons. No updates or changes will ever be implemented. Please take the code for what it is.
